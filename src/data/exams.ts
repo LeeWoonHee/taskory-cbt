@@ -10,6 +10,8 @@ export type Question = {
 export type ExamPaper = {
   id: string;
   year: number;
+  month?: number;
+  round?: number;
   status: "available" | "preparing";
 };
 
@@ -161,6 +163,10 @@ export function getExamById(id: string) {
 export function findExamTitle(id: string) {
   if (id === demoExam.id) return `${demoExam.seriesTitle} ${demoExam.level} · ${demoExam.year}년`;
   return id;
+}
+
+export function formatExamPaperLabel(paper: Pick<ExamPaper, "year" | "month" | "round">) {
+  return `${paper.year}년${paper.month ? ` ${paper.month}월` : ""}${paper.round ? ` ${paper.round}회` : ""}`;
 }
 
 export function filterExamSeries(query: string) {

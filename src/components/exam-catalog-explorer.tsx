@@ -5,12 +5,12 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import Link from "next/link";
 import { useState } from "react";
 
-import type { ExamPaper, ExamSeries } from "@/data/exams";
+import { formatExamPaperLabel, type ExamPaper, type ExamSeries } from "@/data/exams";
 
 function PaperButtons({ papers }: { papers: ExamPaper[] }) {
   const availablePapers = papers.filter((paper) => paper.status === "available");
   if (!availablePapers.length) return <span className="text-sm text-[#9aa0a8]">등록된 시험이 없습니다.</span>;
-  return <>{availablePapers.map((paper) => <Link key={paper.id} href={`/exams/${paper.id}`} className="flex h-10 items-center gap-2 rounded-xl border border-[#8eabd9] bg-[#f1f6ff] px-3 text-sm font-bold text-[#2457ae] transition-colors hover:bg-[#e4efff]"><FileTextIcon size={15} />{paper.year}년</Link>)}</>;
+  return <>{availablePapers.map((paper) => <Link key={paper.id} href={`/exams/${paper.id}`} className="flex h-10 items-center gap-2 rounded-xl border border-[#8eabd9] bg-[#f1f6ff] px-3 text-sm font-bold text-[#2457ae] transition-colors hover:bg-[#e4efff]"><FileTextIcon size={15} />{formatExamPaperLabel(paper)}</Link>)}</>;
 }
 
 export function ExamCatalogExplorer({ series }: { series: ExamSeries[] }) {

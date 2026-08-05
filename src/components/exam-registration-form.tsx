@@ -3,13 +3,13 @@
 import { FileArrowUpIcon, FileCsvIcon, WarningCircleIcon } from "@phosphor-icons/react";
 import { FormEvent, useState } from "react";
 
-type ExamDraft = { title: string; level: string; year: string; category: string; organization: string; passScore: string; sourceName: string; sourceUrl: string; status: "draft" | "published" };
+type ExamDraft = { title: string; level: string; year: string; month: string; round: string; category: string; organization: string; passScore: string; sourceName: string; sourceUrl: string; status: "draft" | "published" };
 type ImportedQuestion = { questionType: "objective" | "subjective"; prompt: string; options: string[] | null; correctAnswer: string; explanation: string | null };
 const inputClass = "h-12 rounded-xl border border-[#dfe3e8] bg-white px-4 text-sm font-medium outline-none transition-colors placeholder:text-[#a4a9b0] focus:border-[#8ca6d7]";
 const labelClass = "flex flex-col gap-2 text-sm font-bold text-[#363b43]";
 
 export function ExamRegistrationForm() {
-  const [exam, setExam] = useState<ExamDraft>({ title: "", level: "", year: "2026", category: "", organization: "", passScore: "60", sourceName: "", sourceUrl: "", status: "draft" });
+  const [exam, setExam] = useState<ExamDraft>({ title: "", level: "", year: "2026", month: "", round: "", category: "", organization: "", passScore: "60", sourceName: "", sourceUrl: "", status: "draft" });
   const [file, setFile] = useState<File | null>(null);
   const [questions, setQuestions] = useState<ImportedQuestion[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
@@ -44,6 +44,7 @@ export function ExamRegistrationForm() {
       {errors.length > 0 && <div role="alert" className="rounded-2xl border border-[#ffd1d1] bg-[#fff5f5] p-4 text-sm text-[#b63f3f]"><div className="flex items-center gap-2 font-bold"><WarningCircleIcon size={18} />엑셀을 확인해 주세요.</div><ul className="mt-2 flex list-disc flex-col gap-1 pl-5">{errors.map((error) => <li key={error}>{error}</li>)}</ul></div>}
       {message && <p role="status" className="rounded-2xl bg-[#eef8f1] px-4 py-3 text-sm font-bold text-[#24824b]">{message}</p>}
       <button type="submit" disabled={loading} className="flex h-13 items-center justify-center rounded-2xl bg-[#17191c] px-6 text-sm font-bold text-white transition-colors hover:bg-[#2563eb] disabled:opacity-50">{loading ? "엑셀 확인 및 등록 중..." : "엑셀 확인 후 등록"}</button>
+      <section className="rounded-3xl border border-[#eceef1] bg-[#fafbfc] p-5 sm:p-6"><h3 className="font-extrabold text-[#30353c]">시험 회차 정보</h3><p className="mt-1 text-sm text-[#858c96]">같은 해에 여러 시험이 있으면 월과 회차로 구분할 수 있습니다.</p><div className="mt-4 flex flex-wrap gap-4"><label className={`${labelClass} min-w-[150px] flex-1`}>출제 월<input type="number" min="1" max="12" value={exam.month} onChange={(event) => updateExam("month", event.target.value)} placeholder="선택 입력" className={inputClass} /></label><label className={`${labelClass} min-w-[150px] flex-1`}>회차<input type="number" min="1" value={exam.round} onChange={(event) => updateExam("round", event.target.value)} placeholder="선택 입력" className={inputClass} /></label></div></section>
     </form>
     {questions.length > 0 && <section className="mt-7 rounded-3xl border border-[#b9ccef] bg-[#f5f8ff] p-5 sm:p-6"><div className="flex items-center justify-between gap-3"><div><p className="text-sm font-bold text-[#2563eb]">등록 미리보기</p><h3 className="mt-1 text-lg font-extrabold text-[#24282e]">총 {questions.length}문항</h3></div><span className="rounded-full bg-white px-3 py-1.5 text-xs font-bold text-[#5f718e]">과목 없음</span></div><div className="mt-4 flex max-h-[520px] flex-col overflow-auto rounded-2xl border border-[#dfe6f5] bg-white">{questions.map((question, index) => <article key={`${question.prompt}-${index}`} className="border-b border-[#edf0f5] p-4 last:border-0"><div className="flex items-start justify-between gap-4"><p className="text-sm font-bold leading-6 text-[#30353c]">{index + 1}. {question.prompt}</p><span className="shrink-0 rounded-full bg-[#eef3ff] px-2 py-1 text-[11px] font-bold text-[#2563eb]">{question.questionType === "objective" ? "객관식" : "주관식"}</span></div>{question.options && <p className="mt-2 text-xs leading-5 text-[#7d8794]">{question.options.map((option, optionIndex) => `${optionIndex + 1}. ${option}`).join(" · ")}</p>}<p className="mt-2 text-xs font-semibold text-[#6f7680]">정답: {question.questionType === "objective" ? `${Number(question.correctAnswer) + 1}번` : question.correctAnswer}{question.explanation ? ` · ${question.explanation}` : ""}</p></article>)}</div></section>}
   </section>;

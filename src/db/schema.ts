@@ -15,6 +15,8 @@ export const exams = pgTable("exams", {
   title: varchar("title", { length: 200 }).notNull(),
   level: varchar("level", { length: 40 }).notNull(),
   examYear: integer("exam_year").notNull(),
+  examMonth: integer("exam_month"),
+  examRound: integer("exam_round"),
   category: varchar("category", { length: 120 }),
   organization: varchar("organization", { length: 200 }),
   status: varchar("status", { length: 32 }).default("draft").notNull(),
