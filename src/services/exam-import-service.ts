@@ -46,10 +46,10 @@ export async function parseExamSpreadsheet(file: File): Promise<ImportResult> {
     const typeValue = getValue(row, headers, ["타입", "type"]).toLowerCase();
     const answer = getValue(row, headers, ["정답", "answer"]);
     const explanation = getValue(row, headers, ["해설", "explanation"]);
-    const optionHeaders = ["선택지1", "선택지 1", "객관식1", "객관식 1", "option1", "선택지2", "선택지 2", "객관식2", "객관식 2", "option2", "선택지3", "선택지 3", "객관식3", "객관식 3", "option3", "선택지4", "선택지 4", "객관식4", "객관식 4", "option4", "선택지5", "선택지 5", "객관식5", "객관식 5", "option5"];
+    const optionNames = (number: number) => [`선택지${number}`, `선택지 ${number}`, `객관식${number}`, `객관식 ${number}`, `option${number}`];
     if (!prompt && !typeValue && !answer) return;
     if (!prompt) errors.push(`${line}행: 문제내용은 필수입니다.`);
-    const options = [1, 2, 3, 4, 5].map((number) => getValue(row, headers, optionHeaders.slice((number - 1) * 5, number * 5))).filter(Boolean);
+    const options = [1, 2, 3, 4, 5].map((number) => getValue(row, headers, optionNames(number))).filter(Boolean);
     const questionType = ["객관식", "객관", "objective", "option"].includes(typeValue) ? "objective" : ["주관식", "주관", "subjective", "short"].includes(typeValue) ? "subjective" : !typeValue && options.length >= 4 ? "objective" : !typeValue && options.length === 0 ? "subjective" : null;
     if (!questionType) errors.push(`${line}행: 타입은 객관식 또는 주관식이어야 합니다.`);
     if (questionType === "objective") {
