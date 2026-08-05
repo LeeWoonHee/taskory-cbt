@@ -1,0 +1,1 @@
+ALTER TABLE "exams" DROP COLUMN "duration_minutes";
