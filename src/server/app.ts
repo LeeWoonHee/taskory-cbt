@@ -57,7 +57,7 @@ export const api = new Elysia({ prefix: "/api" })
       const examId = `admin-${crypto.randomUUID()}`;
       await getDb().transaction(async (tx) => {
         await tx.insert(exams).values({ id: examId, seriesId: examId, title: examMetadata.title!.trim(), level: examMetadata.level?.trim() || null, examYear: Number(examMetadata.year), examMonth: examMetadata.month ? Number(examMetadata.month) : null, examRound: examMetadata.round ? Number(examMetadata.round) : null, category: examMetadata.category?.trim() || null, organization: examMetadata.organization?.trim() || null, passScore: null, sourceName: examMetadata.sourceName?.trim() || null, sourceUrl: examMetadata.sourceUrl?.trim() || null, status: examMetadata.status === "published" ? "published" : "draft", publishedAt: examMetadata.status === "published" ? new Date() : null });
-        await tx.insert(questions).values(parsed.questions.map((question, index) => ({ examId, order: index + 1, questionType: question.questionType, prompt: question.prompt, options: question.options, correctAnswer: question.correctAnswer, explanation: question.explanation })));
+        await tx.insert(questions).values(parsed.questions.map((question, index) => ({ examId, order: index + 1, questionType: question.questionType, prompt: question.prompt, context: question.context, options: question.options, correctAnswer: question.correctAnswer, explanation: question.explanation })));
       });
       return { exam: { id: examId, title: examMetadata.title, questionCount: parsed.questions.length }, questions: parsed.questions };
     } catch (error) { return status(400, { message: error instanceof Error ? error.message : "엑셀 등록에 실패했습니다." }); }

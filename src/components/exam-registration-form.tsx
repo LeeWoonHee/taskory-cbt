@@ -4,7 +4,7 @@ import { FileArrowUpIcon, FileCsvIcon, WarningCircleIcon } from "@phosphor-icons
 import { FormEvent, useState } from "react";
 
 type ExamDraft = { title: string; level: string; year: string; month: string; round: string; category: string; organization: string; sourceName: string; sourceUrl: string; status: "draft" | "published" };
-type ImportedQuestion = { questionType: "objective" | "subjective"; prompt: string; options: string[] | null; correctAnswer: string; explanation: string | null };
+type ImportedQuestion = { questionType: "objective" | "subjective"; prompt: string; context: string | null; options: string[] | null; correctAnswer: string; explanation: string | null };
 const inputClass = "h-12 rounded-xl border border-[#dfe3e8] bg-white px-4 text-sm font-medium outline-none transition-colors placeholder:text-[#a4a9b0] focus:border-[#8ca6d7]";
 const labelClass = "flex flex-col gap-2 text-sm font-bold text-[#363b43]";
 

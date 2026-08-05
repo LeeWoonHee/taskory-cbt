@@ -34,6 +34,7 @@ export const questions = pgTable("questions", {
   questionType: varchar("question_type", { length: 20 }).default("objective").notNull(),
   subject: varchar("subject", { length: 160 }),
   prompt: text("prompt").notNull(),
+  context: text("context"),
   options: jsonb("options").$type<string[] | null>(),
   correctAnswer: text("correct_answer").notNull(),
   explanation: text("explanation"),

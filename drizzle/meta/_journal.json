@@ -57,6 +57,13 @@
       "when": 1785917242666,
       "tag": "0007_nebulous_morlocks",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1785973038718,
+      "tag": "0008_lying_anthem",
+      "breakpoints": true
     }
   ]
 }

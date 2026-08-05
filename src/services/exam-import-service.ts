@@ -3,6 +3,7 @@ import { read, utils } from "xlsx";
 export type ImportedQuestion = {
   questionType: "objective" | "subjective";
   prompt: string;
+  context: string | null;
   options: string[] | null;
   correctAnswer: string;
   explanation: string | null;
@@ -57,7 +58,7 @@ export async function parseExamSpreadsheet(file: File): Promise<ImportResult> {
       if (!Number.isInteger(answerNumber) || answerNumber < 1 || answerNumber > options.length) errors.push(`${line}행: 객관식 정답은 1~${options.length || 5} 중 하나여야 합니다.`);
     }
     if (questionType === "subjective" && !answer) errors.push(`${line}행: 주관식 정답은 필수입니다.`);
-    if (questionType && prompt && answer && (questionType === "subjective" || options.length >= 4) && !(questionType === "objective" && (!Number.isInteger(Number(answer)) || Number(answer) < 1 || Number(answer) > options.length))) questions.push({ questionType, prompt: [prompt, context].filter(Boolean).join("\n\n"), options: questionType === "objective" ? options : null, correctAnswer: questionType === "objective" ? String(Number(answer) - 1) : answer, explanation: explanation || null });
+    if (questionType && prompt && answer && (questionType === "subjective" || options.length >= 4) && !(questionType === "objective" && (!Number.isInteger(Number(answer)) || Number(answer) < 1 || Number(answer) > options.length))) questions.push({ questionType, prompt, context: context || null, options: questionType === "objective" ? options : null, correctAnswer: questionType === "objective" ? String(Number(answer) - 1) : answer, explanation: explanation || null });
   });
   return { questions, errors };
 }

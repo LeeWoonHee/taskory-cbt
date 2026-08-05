@@ -11,7 +11,7 @@ export async function getPublicExam(id: string) {
   const [exam] = await getDb().select().from(exams).where(eq(exams.id, id)).limit(1);
   if (!exam || exam.status !== "published") return null;
   const rows = await getDb().select().from(questions).where(eq(questions.examId, id)).orderBy(questions.order);
-  return { id: exam.id, title: displayTitle(exam), passScore: exam.passScore, source: exam.sourceName ?? "", notice: exam.sourceUrl ?? "", questions: rows.map((question) => ({ id: question.id, questionType: question.questionType, subject: question.subject ?? "", prompt: question.prompt, options: question.options ?? [] })) };
+  return { id: exam.id, title: displayTitle(exam), passScore: exam.passScore, source: exam.sourceName ?? "", notice: exam.sourceUrl ?? "", questions: rows.map((question) => ({ id: question.id, questionType: question.questionType, subject: question.subject ?? "", prompt: question.prompt, context: question.context, options: question.options ?? [] })) };
 }
 
 export async function scoreAttempt(input: { examId: string; answers: Array<number | string | null>; userId?: string | null }) {
