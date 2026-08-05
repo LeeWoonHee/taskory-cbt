@@ -1,10 +1,12 @@
 import { ExamCatalogExplorer } from "@/components/exam-catalog-explorer";
 import { ExamSearch } from "@/components/exam-search";
-import { filterExamSeries } from "@/data/exams";
+import { listExamCatalog } from "@/services/catalog-service";
+
+export const dynamic = "force-dynamic";
 
 export default async function ExamsPage({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   const { q = "" } = await searchParams;
-  const series = filterExamSeries(q);
+  const series = await listExamCatalog(q);
   return (
     <main className="flex-1 bg-white">
       <div className="mx-auto w-full max-w-[1200px] px-5 py-12 sm:px-8 lg:py-20">

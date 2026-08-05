@@ -1,35 +1,36 @@
 import { desc, eq } from "drizzle-orm";
 
-import { getDb, isDatabaseConfigured } from "@/db";
-import { attempts } from "@/db/schema";
-import { examSeries, findExamTitle, getExamById } from "@/data/exams";
+import { getDb } from "@/db";
+import { attempts, exams, questions } from "@/db/schema";
 
-export function listPublicExams() { return examSeries; }
-
-export function getPublicExam(id: string) {
-  const exam = getExamById(id);
-  if (!exam) return null;
-  return { id: exam.id, title: `${exam.seriesTitle} ${exam.level} · ${exam.year}년`, passScore: exam.passScore, source: exam.source, notice: exam.notice, questions: exam.questions.map(({ id: questionId, subject, prompt, options }) => ({ id: questionId, subject, prompt, options })) };
+function displayTitle(exam: { title: string; level: string | null; examYear: number; examMonth: number | null; examRound: number | null }) {
+  return [exam.title, exam.level, `${exam.examYear}년${exam.examMonth ? ` ${exam.examMonth}월` : ""}${exam.examRound ? ` ${exam.examRound}회` : ""}`].filter(Boolean).join(" · ");
 }
 
-export async function scoreAttempt(input: { examId: string; answers: Array<number | null>; userId?: string | null }) {
-  const exam = getExamById(input.examId);
-  if (!exam) return null;
-  const normalizedAnswers = exam.questions.map((_, index) => input.answers[index] ?? null);
-  const correctCount = exam.questions.reduce((total, question, index) => total + (normalizedAnswers[index] === question.answer ? 1 : 0), 0);
-  const score = Math.round((correctCount / exam.questions.length) * 100);
-  if (isDatabaseConfigured()) await getDb().insert(attempts).values({ userId: input.userId ?? null, examId: input.examId, score, correctCount, totalCount: exam.questions.length, answers: normalizedAnswers });
-  return {
-    score,
-    correctCount,
-    totalCount: exam.questions.length,
-    passed: score >= exam.passScore,
-    review: input.userId ? exam.questions.map((question, index) => ({ questionId: question.id, selectedAnswer: normalizedAnswers[index], correctAnswer: question.answer, explanation: question.explanation, correct: normalizedAnswers[index] === question.answer })) : null,
+export async function getPublicExam(id: string) {
+  const [exam] = await getDb().select().from(exams).where(eq(exams.id, id)).limit(1);
+  if (!exam || exam.status !== "published") return null;
+  const rows = await getDb().select().from(questions).where(eq(questions.examId, id)).orderBy(questions.order);
+  return { id: exam.id, title: displayTitle(exam), passScore: exam.passScore, source: exam.sourceName ?? "", notice: exam.sourceUrl ?? "", questions: rows.map((question) => ({ id: question.id, questionType: question.questionType, subject: question.subject ?? "", prompt: question.prompt, options: question.options ?? [] })) };
+}
+
+export async function scoreAttempt(input: { examId: string; answers: Array<number | string | null>; userId?: string | null }) {
+  const [exam] = await getDb().select().from(exams).where(eq(exams.id, input.examId)).limit(1);
+  if (!exam || exam.status !== "published") return null;
+  const rows = await getDb().select().from(questions).where(eq(questions.examId, input.examId)).orderBy(questions.order);
+  const normalizedAnswers = rows.map((_, index) => input.answers[index] ?? null);
+  const correct = (answer: number | string | null, question: typeof rows[number]) => {
+    if (answer === null) return false;
+    if (question.questionType === "subjective") return String(answer).trim().toLowerCase() === question.correctAnswer.trim().toLowerCase();
+    return String(answer) === question.correctAnswer;
   };
+  const correctCount = rows.reduce((total, question, index) => total + (correct(normalizedAnswers[index], question) ? 1 : 0), 0);
+  const score = rows.length ? Math.round((correctCount / rows.length) * 100) : 0;
+  if (input.userId) await getDb().insert(attempts).values({ userId: input.userId, examId: input.examId, score, correctCount, totalCount: rows.length, answers: normalizedAnswers });
+  return { score, correctCount, totalCount: rows.length, passed: score >= exam.passScore, review: input.userId ? rows.map((question, index) => ({ questionId: question.id, selectedAnswer: normalizedAnswers[index], correctAnswer: question.questionType === "objective" ? Number(question.correctAnswer) : question.correctAnswer, explanation: question.explanation ?? "", correct: correct(normalizedAnswers[index], question) })) : null };
 }
 
 export async function listUserAttempts(userId: string) {
-  if (!isDatabaseConfigured()) return [];
-  const rows = await getDb().select({ id: attempts.id, examId: attempts.examId, score: attempts.score, correctCount: attempts.correctCount, totalCount: attempts.totalCount, completedAt: attempts.completedAt }).from(attempts).where(eq(attempts.userId, userId)).orderBy(desc(attempts.completedAt)).limit(20);
-  return rows.map((attempt) => ({ ...attempt, examTitle: findExamTitle(attempt.examId) }));
+  const rows = await getDb().select({ id: attempts.id, examId: attempts.examId, examTitle: exams.title, score: attempts.score, correctCount: attempts.correctCount, totalCount: attempts.totalCount, completedAt: attempts.completedAt }).from(attempts).leftJoin(exams, eq(attempts.examId, exams.id)).where(eq(attempts.userId, userId)).orderBy(desc(attempts.completedAt)).limit(20);
+  return rows.map((attempt) => ({ ...attempt, examTitle: attempt.examTitle ?? attempt.examId }));
 }

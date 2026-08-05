@@ -5,20 +5,21 @@ import { createSessionCookie, createSessionToken, clearSessionCookie, getAdminUs
 import { getAdminOverview, updateUserRole } from "@/services/admin-service";
 import { parseExamSpreadsheet } from "@/services/exam-import-service";
 import { exams, questions } from "@/db/schema";
-import { getPublicExam, listPublicExams, listUserAttempts, scoreAttempt } from "@/services/exam-service";
+import { listExamCatalog } from "@/services/catalog-service";
+import { getPublicExam, listUserAttempts, scoreAttempt } from "@/services/exam-service";
 
 export const api = new Elysia({ prefix: "/api" })
   .get("/health", () => ({ status: "ok", database: isDatabaseConfigured() ? "configured" : "not-configured" }))
-  .get("/exams", () => ({ exams: listPublicExams() }))
-  .get("/exams/:id", ({ params, status }) => {
-    const exam = getPublicExam(params.id);
+  .get("/exams", async () => ({ exams: await listExamCatalog() }))
+  .get("/exams/:id", async ({ params, status }) => {
+    const exam = await getPublicExam(params.id);
     return exam ?? status(404, { message: "시험을 찾을 수 없습니다." });
   })
   .post("/attempts", async ({ body, request, status }) => {
     const user = await getCurrentUser(request);
     const result = await scoreAttempt({ examId: body.examId, answers: body.answers, userId: user?.id });
     return result ?? status(404, { message: "시험을 찾을 수 없습니다." });
-  }, { body: t.Object({ examId: t.String({ minLength: 1 }), answers: t.Array(t.Union([t.Integer({ minimum: 0 }), t.Null()])) }) })
+  }, { body: t.Object({ examId: t.String({ minLength: 1 }), answers: t.Array(t.Union([t.Integer({ minimum: 0 }), t.String(), t.Null()])) }) })
   .get("/attempts/me", async ({ request, status }) => {
     const user = await getCurrentUser(request);
     if (!user) return status(401, { message: "로그인이 필요합니다." });

@@ -2,9 +2,12 @@ import Link from "next/link";
 
 import { ExamCatalogExplorer } from "@/components/exam-catalog-explorer";
 import { SearchHero } from "@/components/search-hero";
-import { examSeries } from "@/data/exams";
+import { listExamCatalog } from "@/services/catalog-service";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default async function Home() {
+  const examSeries = await listExamCatalog();
   return (
     <main className="flex-1 bg-white">
       <div className="mx-auto w-full max-w-[1200px] px-5 pb-16 pt-8 sm:px-8 lg:pt-12">

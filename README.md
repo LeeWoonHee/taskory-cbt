@@ -21,7 +21,7 @@ cp .env.example .env.local
 bun run dev
 ```
 
-`DATABASE_URL`이 없어도 시험 목록과 데모 응시는 동작합니다. 회원가입, 로그인, 회원 결과 저장은 Neon 연결이 필요합니다.
+회원가입, 로그인, 시험 목록, 응시 결과 저장은 Neon 연결이 필요합니다.
 
 ## 환경 변수
 
@@ -29,7 +29,6 @@ bun run dev
 DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
 SESSION_SECRET=32자 이상의 임의 문자열
 ADMIN_EMAIL=최초 관리자 계정으로 사용할 이메일
-ADMIN_BYPASS=false
 NEXT_PUBLIC_ADSENSE_CLIENT_ID=
 ```
 
@@ -60,8 +59,6 @@ bun run db:migrate
 ## 관리자 페이지
 
 `.env.local`에 `ADMIN_EMAIL`을 설정한 뒤 해당 이메일로 회원가입하고 로그인하면 자동으로 관리자 권한이 부여됩니다. 이후 `/admin`에서 관리자 콘솔에 접속할 수 있습니다. 기존 데이터베이스에는 역할 컬럼 마이그레이션을 적용해야 합니다.
-
-로컬 선개발 테스트 중에는 `ADMIN_BYPASS=true`를 설정하면 로그인 없이 `/admin`에 접근할 수 있습니다. 이 우회는 `NODE_ENV=production`에서 항상 비활성화됩니다. 테스트가 끝나면 반드시 `ADMIN_BYPASS=false`로 변경하세요.
 
 ### 시험 엑셀 등록
 

@@ -47,7 +47,7 @@ export const attempts = pgTable("attempts", {
   score: integer("score").notNull(),
   correctCount: integer("correct_count").notNull(),
   totalCount: integer("total_count").notNull(),
-  answers: jsonb("answers").$type<Array<number | null>>().notNull(),
+  answers: jsonb("answers").$type<Array<number | string | null>>().notNull(),
   completedAt: timestamp("completed_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

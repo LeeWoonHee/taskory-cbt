@@ -2,7 +2,7 @@ import { compare, hash } from "bcryptjs";
 import { eq } from "drizzle-orm";
 import { jwtVerify, SignJWT } from "jose";
 
-import { getDb, isDatabaseConfigured } from "@/db";
+import { getDb } from "@/db";
 import { users } from "@/db/schema";
 
 const COOKIE_NAME = "cbt_session";
@@ -49,12 +49,8 @@ export function clearSessionCookie() {
   return `${COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`;
 }
 
-export function isAdminBypassEnabled() {
-  return process.env.NODE_ENV !== "production" && process.env.ADMIN_BYPASS === "true";
-}
-
 export async function getCurrentUser(request: Request) {
-  if (!isDatabaseConfigured() || !process.env.SESSION_SECRET) return null;
+  if (!process.env.SESSION_SECRET) return null;
   const cookie = request.headers.get("cookie") ?? "";
   const token = cookie.split(";").map((value) => value.trim()).find((value) => value.startsWith(`${COOKIE_NAME}=`))?.slice(COOKIE_NAME.length + 1);
   if (!token) return null;
@@ -67,9 +63,6 @@ export async function getCurrentUser(request: Request) {
 }
 
 export async function getAdminUser(request: Request) {
-  if (isAdminBypassEnabled()) {
-    return { id: "test-admin", name: "테스트 관리자", email: process.env.ADMIN_EMAIL ?? "test-admin@localhost", role: "admin" as const };
-  }
   const user = await getCurrentUser(request);
   return user?.role === "admin" ? user : null;
 }
