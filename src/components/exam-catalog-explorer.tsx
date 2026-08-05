@@ -34,16 +34,17 @@ export function ExamCatalogExplorer({ series }: { series: ExamSeries[] }) {
                     {item.levels.map((level) => {
                       const key = `${item.id}-${level.id}`;
                       const isLevelOpen = expandedLevels.includes(key);
-                      const availableCount = level.papers.filter((paper) => paper.status === "available").length;
+                      const availablePapers = level.papers.filter((paper) => paper.status === "available");
+                      const availableCount = availablePapers.length;
                       return <section key={level.id} className="border-t border-[#e8eaed] first:border-t-0">
                         <button type="button" onClick={() => toggleLevel(key)} aria-expanded={isLevelOpen} className="flex w-full items-center justify-between gap-4 py-4 text-left">
-                          <span className="flex items-center gap-3"><span className="flex size-8 items-center justify-center rounded-lg bg-[#eef3fb] text-sm font-extrabold text-[#3764ae]">{level.label}</span><span className="text-sm font-bold text-[#424951]">{level.papers[0]?.year}~{level.papers.at(-1)?.year}년</span><span className="text-xs text-[#9298a0]">{availableCount ? `응시 가능 ${availableCount}개` : "문항 검수 중"}</span></span>
+                          <span className="flex items-center gap-3"><span className="flex size-8 items-center justify-center rounded-lg bg-[#eef3fb] text-sm font-extrabold text-[#3764ae]">{level.label}</span><span className="text-xs text-[#9298a0]">{availableCount ? `등록 시험 ${availableCount}개` : "등록된 시험 없음"}</span></span>
                           <motion.span animate={{ rotate: isLevelOpen ? 90 : 0 }} transition={transition}><CaretRightIcon size={16} className="text-[#747b85]" /></motion.span>
                         </button>
                         <AnimatePresence initial={false}>
                           {isLevelOpen && <motion.div key="papers" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={transition} className="overflow-hidden">
                             <div className="flex flex-wrap gap-2 pb-5">
-                              {level.papers.map((paper) => paper.status === "available" ? <Link key={paper.id} href={`/exams/${paper.id}`} className="flex h-10 items-center gap-2 rounded-xl border border-[#8eabd9] bg-[#f1f6ff] px-3 text-sm font-bold text-[#2457ae] transition-colors hover:bg-[#e4efff]"><FileTextIcon size={15} />{paper.year}년</Link> : <span key={paper.id} className="flex h-10 items-center rounded-xl border border-[#e4e6ea] bg-[#fafbfc] px-3 text-sm font-medium text-[#9aa0a8]">{paper.year}년</span>)}
+                              {availablePapers.length ? availablePapers.map((paper) => <Link key={paper.id} href={`/exams/${paper.id}`} className="flex h-10 items-center gap-2 rounded-xl border border-[#8eabd9] bg-[#f1f6ff] px-3 text-sm font-bold text-[#2457ae] transition-colors hover:bg-[#e4efff]"><FileTextIcon size={15} />{paper.year}년</Link>) : <span className="text-sm text-[#9aa0a8]">등록된 시험이 없습니다.</span>}
                             </div>
                           </motion.div>}
                         </AnimatePresence>
