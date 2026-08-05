@@ -26,6 +26,7 @@ export type ExamSeries = {
   organization: string;
   description: string;
   levels: CertificationLevel[];
+  papers?: ExamPaper[];
 };
 
 export const demoExam = {
@@ -165,5 +166,5 @@ export function findExamTitle(id: string) {
 export function filterExamSeries(query: string) {
   const normalized = query.trim().toLowerCase();
   if (!normalized) return examSeries;
-  return examSeries.filter((series) => [series.title, series.category, series.organization, ...series.levels.map((level) => level.label), ...series.levels.flatMap((level) => level.papers.map((paper) => String(paper.year)))].some((value) => value.toLowerCase().includes(normalized)));
+  return examSeries.filter((series) => [series.title, series.category, series.organization, ...series.levels.map((level) => level.label), ...series.levels.flatMap((level) => level.papers.map((paper) => String(paper.year))), ...(series.papers ?? []).map((paper) => String(paper.year))].some((value) => value.toLowerCase().includes(normalized)));
 }
