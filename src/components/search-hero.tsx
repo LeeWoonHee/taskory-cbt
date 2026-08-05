@@ -5,9 +5,7 @@ import { motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-const keywords = ["정보처리기사", "컴퓨터활용능력", "한국사"];
-
-export function SearchHero() {
+export function SearchHero({ keywords }: { keywords: string[] }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
   const search = (value = query) => {

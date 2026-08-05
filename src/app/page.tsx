@@ -11,7 +11,7 @@ export default async function Home() {
   return (
     <main className="flex-1 bg-white">
       <div className="mx-auto w-full max-w-[1200px] px-5 pb-16 pt-8 sm:px-8 lg:pt-12">
-        <SearchHero />
+        <SearchHero keywords={examSeries.map((series) => series.title).slice(0, 3)} />
         <section className="mt-16">
           <div className="flex items-end justify-between gap-5 border-b border-[#dfe3e8] pb-5">
             <div>
