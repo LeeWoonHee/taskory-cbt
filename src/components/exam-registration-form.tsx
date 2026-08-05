@@ -21,7 +21,7 @@ function toErrorMessages(value: unknown): string[] {
 }
 
 export function ExamRegistrationForm() {
-  const [exam, setExam] = useState<ExamDraft>({ title: "", level: "", year: "2026", month: "", round: "", category: "", organization: "", sourceName: "", sourceUrl: "", status: "draft" });
+  const [exam, setExam] = useState<ExamDraft>({ title: "", level: "", year: "2026", month: "", round: "", category: "", organization: "", sourceName: "", sourceUrl: "", status: "published" });
   const [file, setFile] = useState<File | null>(null);
   const [questions, setQuestions] = useState<ImportedQuestion[]>([]);
   const [errors, setErrors] = useState<string[]>([]);
