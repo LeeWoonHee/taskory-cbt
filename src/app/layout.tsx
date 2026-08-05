@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 
 export const metadata: Metadata = {
-  title: "taskory | CBT 시험 연습",
+  title: "taskory | CBT 시험",
   description:
     "자격시험 문제를 CBT 환경에서 풀고 결과를 확인하는 시험 연습 서비스입니다.",
 };
