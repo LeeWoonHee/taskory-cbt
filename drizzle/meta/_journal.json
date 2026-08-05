@@ -43,6 +43,13 @@
       "when": 1785913489326,
       "tag": "0005_sharp_rocket_raccoon",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1785913697301,
+      "tag": "0006_acoustic_ben_parker",
+      "breakpoints": true
     }
   ]
 }

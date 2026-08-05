@@ -13,7 +13,7 @@ export const exams = pgTable("exams", {
   id: varchar("id", { length: 160 }).primaryKey(),
   seriesId: varchar("series_id", { length: 160 }).notNull(),
   title: varchar("title", { length: 200 }).notNull(),
-  level: varchar("level", { length: 40 }).notNull(),
+  level: varchar("level", { length: 40 }),
   examYear: integer("exam_year").notNull(),
   examMonth: integer("exam_month"),
   examRound: integer("exam_round"),

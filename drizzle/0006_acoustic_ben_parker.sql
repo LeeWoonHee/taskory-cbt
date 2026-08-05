@@ -1,0 +1,1 @@
+ALTER TABLE "exams" ALTER COLUMN "level" DROP NOT NULL;
