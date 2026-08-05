@@ -2,7 +2,7 @@ import { Elysia, t } from "elysia";
 
 import { getDb, isDatabaseConfigured } from "@/db";
 import { createSessionCookie, createSessionToken, clearSessionCookie, getAdminUser, getCurrentUser, loginUser, registerUser } from "@/services/auth-service";
-import { getAdminOverview, updateExamStatus, updateUserRole } from "@/services/admin-service";
+import { deleteExam, getAdminOverview, updateExamStatus, updateUserRole } from "@/services/admin-service";
 import { parseExamSpreadsheet } from "@/services/exam-import-service";
 import { exams, questions } from "@/db/schema";
 import { listExamCatalog } from "@/services/catalog-service";
@@ -40,6 +40,11 @@ export const api = new Elysia({ prefix: "/api" })
     const updated = await updateExamStatus(params.id, body.status);
     return updated ?? status(404, { message: "시험을 찾을 수 없습니다." });
   }, { params: t.Object({ id: t.String({ minLength: 1 }) }), body: t.Object({ status: t.Union([t.Literal("draft"), t.Literal("published")]) }) })
+  .delete("/admin/exams/:id", async ({ params, request, status }) => {
+    if (!await getAdminUser(request)) return status(403, { message: "관리자 권한이 필요합니다." });
+    const deleted = await deleteExam(params.id);
+    return deleted ?? status(404, { message: "시험을 찾을 수 없습니다." });
+  }, { params: t.Object({ id: t.String({ minLength: 1 }) }) })
   .post("/admin/exams/import", async ({ body, request, status }) => {
     if (!await getAdminUser(request)) return status(403, { message: "관리자 권한이 필요합니다." });
     try {

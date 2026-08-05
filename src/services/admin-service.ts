@@ -28,6 +28,11 @@ export async function updateExamStatus(examId: string, status: "draft" | "publis
   return exam ?? null;
 }
 
+export async function deleteExam(examId: string) {
+  const [exam] = await getDb().delete(exams).where(eq(exams.id, examId)).returning({ id: exams.id });
+  return exam ?? null;
+}
+
 export async function updateUserRole(userId: string, role: "user" | "admin", currentUserId: string) {
   if (userId === currentUserId && role !== "admin") return null;
   const [user] = await getDb().update(users).set({ role }).where(eq(users.id, userId)).returning({ id: users.id, name: users.name, email: users.email, role: users.role });
