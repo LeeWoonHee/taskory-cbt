@@ -8,6 +8,18 @@ type ImportedQuestion = { questionType: "objective" | "subjective"; prompt: stri
 const inputClass = "h-12 rounded-xl border border-[#dfe3e8] bg-white px-4 text-sm font-medium outline-none transition-colors placeholder:text-[#a4a9b0] focus:border-[#8ca6d7]";
 const labelClass = "flex flex-col gap-2 text-sm font-bold text-[#363b43]";
 
+function toErrorMessages(value: unknown): string[] {
+  if (Array.isArray(value)) return value.flatMap(toErrorMessages);
+  if (typeof value === "string") return [value];
+  if (value && typeof value === "object") {
+    const error = value as { message?: unknown; summary?: unknown };
+    if (error.message) return toErrorMessages(error.message);
+    if (error.summary) return toErrorMessages(error.summary);
+    try { return [JSON.stringify(value)]; } catch { return ["알 수 없는 오류가 발생했습니다."]; }
+  }
+  return ["알 수 없는 오류가 발생했습니다."];
+}
+
 export function ExamRegistrationForm() {
   const [exam, setExam] = useState<ExamDraft>({ title: "", level: "", year: "2026", month: "", round: "", category: "", organization: "", sourceName: "", sourceUrl: "", status: "draft" });
   const [file, setFile] = useState<File | null>(null);
@@ -30,8 +42,8 @@ export function ExamRegistrationForm() {
     formData.append("file", file);
     try {
       const response = await fetch("/api/admin/exams/import", { method: "POST", body: formData });
-      const result = await response.json() as { message?: string; errors?: string[]; questions?: ImportedQuestion[]; exam?: { title: string; questionCount: number } };
-      if (!response.ok) { setErrors(result.errors?.length ? result.errors : [result.message ?? "엑셀 등록에 실패했습니다."]); setQuestions(result.questions ?? []); return; }
+      const result = await response.json() as { message?: unknown; errors?: unknown; questions?: ImportedQuestion[]; exam?: { title: string; questionCount: number } };
+      if (!response.ok) { setErrors(toErrorMessages(result.errors ?? result.message ?? `엑셀 등록에 실패했습니다. (${response.status})`)); setQuestions(result.questions ?? []); return; }
       setQuestions(result.questions ?? []);
       setMessage(`${result.exam?.title ?? "시험"}이(가) ${result.exam?.questionCount ?? 0}문항으로 등록되었습니다.`);
     } catch { setErrors(["서버와 통신하지 못했습니다. 잠시 후 다시 시도해 주세요."]); }
