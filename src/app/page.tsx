@@ -28,7 +28,7 @@ export default async function Home() {
             </Link>
           </div>
           <div className="mt-2">
-            <ExamCatalogExplorer series={examSeries.slice(0, 3)} />
+            {examSeries.length ? <ExamCatalogExplorer series={examSeries.slice(0, 3)} /> : <div className="flex min-h-48 flex-col items-center justify-center rounded-3xl border border-[#e1e4e8] bg-[#fafbfc] px-5 text-center"><p className="font-bold text-[#343a42]">현재 등록된 시험이 없습니다.</p><p className="mt-2 text-sm text-[#8a9099]">관리자가 시험을 등록하면 이곳에서 확인할 수 있습니다.</p></div>}
           </div>
         </section>
       </div>
