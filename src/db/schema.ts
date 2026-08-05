@@ -20,7 +20,7 @@ export const exams = pgTable("exams", {
   category: varchar("category", { length: 120 }),
   organization: varchar("organization", { length: 200 }),
   status: varchar("status", { length: 32 }).default("draft").notNull(),
-  passScore: integer("pass_score").notNull(),
+  passScore: integer("pass_score"),
   sourceName: varchar("source_name", { length: 240 }),
   sourceUrl: text("source_url"),
   publishedAt: timestamp("published_at", { withTimezone: true }),

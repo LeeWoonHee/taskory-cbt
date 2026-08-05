@@ -39,7 +39,7 @@ export const api = new Elysia({ prefix: "/api" })
     if (!await getAdminUser(request)) return status(403, { message: "관리자 권한이 필요합니다." });
     try {
       const metadata = JSON.parse(body.metadata) as { title?: string; level?: string; year?: string; month?: string; round?: string; category?: string; organization?: string; passScore?: string; sourceName?: string; sourceUrl?: string; status?: string };
-      if (!metadata.title?.trim() || !metadata.year || !metadata.passScore) return status(400, { message: "시험명, 출제 연도, 합격 기준 점수는 필수입니다." });
+      if (!metadata.title?.trim() || !metadata.year) return status(400, { message: "시험명과 출제 연도는 필수입니다." });
       if (metadata.month && (!Number.isInteger(Number(metadata.month)) || Number(metadata.month) < 1 || Number(metadata.month) > 12)) return status(400, { message: "출제 월은 1~12 사이로 입력해 주세요." });
       if (metadata.round && (!Number.isInteger(Number(metadata.round)) || Number(metadata.round) < 1)) return status(400, { message: "회차는 1 이상으로 입력해 주세요." });
       const parsed = await parseExamSpreadsheet(body.file);
@@ -47,7 +47,7 @@ export const api = new Elysia({ prefix: "/api" })
       if (!isDatabaseConfigured()) return status(503, { message: "엑셀 검증이 완료되었습니다. 실제 저장하려면 DATABASE_URL을 설정해 주세요.", questions: parsed.questions });
       const examId = `admin-${crypto.randomUUID()}`;
       await getDb().transaction(async (tx) => {
-        await tx.insert(exams).values({ id: examId, seriesId: examId, title: metadata.title!.trim(), level: metadata.level?.trim() || null, examYear: Number(metadata.year), examMonth: metadata.month ? Number(metadata.month) : null, examRound: metadata.round ? Number(metadata.round) : null, category: metadata.category?.trim() || null, organization: metadata.organization?.trim() || null, passScore: Number(metadata.passScore), sourceName: metadata.sourceName?.trim() || null, sourceUrl: metadata.sourceUrl?.trim() || null, status: metadata.status === "published" ? "published" : "draft", publishedAt: metadata.status === "published" ? new Date() : null });
+        await tx.insert(exams).values({ id: examId, seriesId: examId, title: metadata.title!.trim(), level: metadata.level?.trim() || null, examYear: Number(metadata.year), examMonth: metadata.month ? Number(metadata.month) : null, examRound: metadata.round ? Number(metadata.round) : null, category: metadata.category?.trim() || null, organization: metadata.organization?.trim() || null, passScore: metadata.passScore ? Number(metadata.passScore) : null, sourceName: metadata.sourceName?.trim() || null, sourceUrl: metadata.sourceUrl?.trim() || null, status: metadata.status === "published" ? "published" : "draft", publishedAt: metadata.status === "published" ? new Date() : null });
         await tx.insert(questions).values(parsed.questions.map((question, index) => ({ examId, order: index + 1, questionType: question.questionType, prompt: question.prompt, options: question.options, correctAnswer: question.correctAnswer, explanation: question.explanation })));
       });
       return { exam: { id: examId, title: metadata.title, questionCount: parsed.questions.length }, questions: parsed.questions };
