@@ -2,6 +2,7 @@
 
 import { FileArrowUpIcon, FileCsvIcon, WarningCircleIcon } from "@phosphor-icons/react";
 import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
 
 type ExamDraft = { title: string; level: string; year: string; month: string; round: string; category: string; organization: string; sourceName: string; sourceUrl: string; status: "draft" | "published" };
 type ImportedQuestion = { questionType: "objective" | "subjective"; prompt: string; context: string | null; options: string[] | null; correctAnswer: string; explanation: string | null };
@@ -21,6 +22,7 @@ function toErrorMessages(value: unknown): string[] {
 }
 
 export function ExamRegistrationForm() {
+  const router = useRouter();
   const [exam, setExam] = useState<ExamDraft>({ title: "", level: "", year: "2026", month: "", round: "", category: "", organization: "", sourceName: "", sourceUrl: "", status: "published" });
   const [file, setFile] = useState<File | null>(null);
   const [questions, setQuestions] = useState<ImportedQuestion[]>([]);
@@ -46,6 +48,7 @@ export function ExamRegistrationForm() {
       if (!response.ok) { setErrors(toErrorMessages(result.errors ?? result.message ?? `엑셀 등록에 실패했습니다. (${response.status})`)); setQuestions(result.questions ?? []); return; }
       setQuestions(result.questions ?? []);
       setMessage(`${result.exam?.title ?? "시험"}이(가) ${result.exam?.questionCount ?? 0}문항으로 등록되었습니다.`);
+      window.setTimeout(() => router.push("/admin"), 800);
     } catch { setErrors(["서버와 통신하지 못했습니다. 잠시 후 다시 시도해 주세요."]); }
     finally { setLoading(false); }
   }
