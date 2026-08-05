@@ -6,9 +6,9 @@ import { useState } from "react";
 
 type PublicQuestion = { id: string; questionType: string; subject: string; prompt: string; options: string[] };
 type Review = { questionId: string; selectedAnswer: number | string | null; correctAnswer: number | string; explanation: string; correct: boolean };
-type Result = { score: number; passed: boolean; correctCount: number; totalCount: number; review: Review[] | null };
+type Result = { score: number; passed: boolean | null; passScore?: number | null; correctCount: number; totalCount: number; review: Review[] | null };
 
-export function ExamRunner({ exam }: { exam: { id: string; title: string; passScore: number; questions: PublicQuestion[] } }) {
+export function ExamRunner({ exam }: { exam: { id: string; title: string; passScore: number | null; questions: PublicQuestion[] } }) {
   const [answers, setAnswers] = useState<Array<number | string | null>>(() => exam.questions.map(() => null));
   const [bookmarks, setBookmarks] = useState<number[]>([]);
   const [result, setResult] = useState<Result | null>(null);
@@ -32,7 +32,7 @@ export function ExamRunner({ exam }: { exam: { id: string; title: string; passSc
       setResult(await response.json() as Result);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
-      setResult({ score: 0, passed: false, correctCount: 0, totalCount: exam.questions.length, review: null });
+      setResult({ score: 0, passed: exam.passScore === null ? null : false, passScore: exam.passScore, correctCount: 0, totalCount: exam.questions.length, review: null });
     } finally {
       setLoading(false);
     }
@@ -43,7 +43,7 @@ export function ExamRunner({ exam }: { exam: { id: string; title: string; passSc
       <div className="mx-auto w-full max-w-5xl px-5 py-12 sm:px-8 lg:py-20">
         <section className="rounded-[28px] border border-[#dfe3e8] bg-[#f7f8fa] p-7 text-center sm:p-12">
           <p className="text-sm font-bold text-[#2563eb]">시험 결과</p><p className="mt-5 text-7xl font-extrabold tracking-[-0.07em] text-[#17191c] sm:text-8xl">{result.score}<span className="ml-1 text-2xl">점</span></p>
-          <p className="mt-5 text-base font-bold text-[#343a42]">{result.passed ? "합격 기준을 통과했습니다." : "조금 더 학습이 필요합니다."}</p><p className="mt-2 text-sm text-[#818892]">{result.totalCount}문항 중 {result.correctCount}문항 정답 · 합격 기준 {exam.passScore}점</p>
+          <p className="mt-5 text-base font-bold text-[#343a42]">{result.passScore === null || result.passScore === undefined ? "채점이 완료되었습니다." : result.passed ? "합격 기준을 통과했습니다." : "조금 더 학습이 필요합니다."}</p><p className="mt-2 text-sm text-[#818892]">{result.totalCount}문항 중 {result.correctCount}문항 정답{result.passScore !== null && result.passScore !== undefined ? ` · 합격 기준 ${result.passScore}점` : ""}</p>
           <div className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row"><button type="button" onClick={() => { setResult(null); setAnswers(exam.questions.map(() => null)); setBookmarks([]); }} className="flex h-12 flex-1 items-center justify-center rounded-2xl bg-[#17191c] text-sm font-bold text-white">다시 풀기</button><Link href="/exams" className="flex h-12 flex-1 items-center justify-center rounded-2xl border border-[#d6dae0] bg-white text-sm font-bold text-[#414750]">다른 시험 보기</Link></div>
         </section>
         {result.review ? <section className="mt-8 rounded-[28px] border border-[#e0e3e7] bg-white p-6 sm:p-9"><h2 className="text-xl font-extrabold">문항별 정답과 해설</h2><div className="mt-6 flex flex-col">{result.review.map((item, index) => <article key={item.questionId} className="flex flex-col gap-3 border-t border-[#eceef1] py-6 sm:flex-row sm:gap-6"><span className={item.correct ? "flex size-9 shrink-0 items-center justify-center rounded-full bg-[#eef8f1] text-[#24824b]" : "flex size-9 shrink-0 items-center justify-center rounded-full bg-[#fff1f1] text-[#c64545]"}><CheckCircleIcon size={19} /></span><div><p className="font-bold leading-6">{index + 1}. {exam.questions[index].prompt}</p><p className="mt-2 text-sm text-[#6f7680]">정답 {typeof item.correctAnswer === "number" ? `${item.correctAnswer + 1}번` : item.correctAnswer} · {item.explanation}</p></div></article>)}</div></section> : <section className="mt-8 flex flex-col items-center rounded-[28px] border border-[#e0e3e7] bg-white p-9 text-center"><span className="flex size-12 items-center justify-center rounded-2xl bg-[#f1f4f8] text-[#69727e]"><LockKeyIcon size={23} /></span><h2 className="mt-5 text-xl font-extrabold">정답과 해설은 회원에게 제공됩니다.</h2><p className="mt-2 text-sm text-[#808791]">로그인하면 이번 결과를 저장하고 문항별 해설을 확인할 수 있습니다.</p><Link href="/login" className="mt-6 rounded-2xl bg-[#2563eb] px-6 py-3 text-sm font-bold text-white">로그인하기</Link></section>}

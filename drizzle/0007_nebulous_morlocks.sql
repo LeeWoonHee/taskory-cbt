@@ -1,0 +1,1 @@
+ALTER TABLE "exams" ALTER COLUMN "pass_score" DROP NOT NULL;
