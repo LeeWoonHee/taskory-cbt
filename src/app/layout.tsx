@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import "@fontsource-variable/noto-sans-kr";
 import "./globals.css";
 
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
     "자격시험 문제를 CBT 환경에서 풀고 결과를 확인하는 시험 연습 서비스입니다.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko" className="h-full antialiased">
       <body className="flex min-h-full flex-col bg-white">
