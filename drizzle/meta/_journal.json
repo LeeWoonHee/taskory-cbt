@@ -64,6 +64,13 @@
       "when": 1785973038718,
       "tag": "0008_lying_anthem",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1785976624416,
+      "tag": "0009_demonic_wild_pack",
+      "breakpoints": true
     }
   ]
 }

@@ -10,7 +10,7 @@ export async function getAdminOverview() {
     db.select({ value: count() }).from(attempts),
     db.select({ value: count() }).from(exams),
     db.select({ id: users.id, name: users.name, email: users.email, role: users.role, createdAt: users.createdAt }).from(users).orderBy(desc(users.createdAt)).limit(50),
-    db.select({ id: attempts.id, userId: attempts.userId, examId: attempts.examId, examTitle: exams.title, score: attempts.score, correctCount: attempts.correctCount, totalCount: attempts.totalCount, completedAt: attempts.completedAt }).from(attempts).leftJoin(exams, eq(attempts.examId, exams.id)).orderBy(desc(attempts.completedAt)).limit(500),
+    db.select({ id: attempts.id, userId: attempts.userId, examId: attempts.examId, examTitle: attempts.examTitle, score: attempts.score, correctCount: attempts.correctCount, totalCount: attempts.totalCount, completedAt: attempts.completedAt }).from(attempts).orderBy(desc(attempts.completedAt)).limit(500),
     db.select({ id: exams.id, title: exams.title, level: exams.level, examYear: exams.examYear, examMonth: exams.examMonth, examRound: exams.examRound, status: exams.status, questionCount: count(questions.id), createdAt: exams.createdAt }).from(exams).leftJoin(questions, eq(questions.examId, exams.id)).groupBy(exams.id, exams.title, exams.level, exams.examYear, exams.examMonth, exams.examRound, exams.status, exams.createdAt).orderBy(desc(exams.createdAt)),
   ]);
   const attemptsByUser = new Map<string, Array<{ id: string; examTitle: string; score: number; correctCount: number; totalCount: number; completedAt: string }>>();

@@ -10,6 +10,16 @@ export const metadata: Metadata = {
   title: "taskory | CBT 시험",
   description:
     "자격시험 문제를 CBT 환경에서 풀고 결과를 확인하는 시험 연습 서비스입니다.",
+  metadataBase: process.env.NEXT_PUBLIC_SITE_URL ? new URL(process.env.NEXT_PUBLIC_SITE_URL) : undefined,
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "taskory | CBT 시험",
+    description: "자격시험 문제를 CBT 환경에서 풀고 결과를 확인하는 시험 연습 서비스입니다.",
+    type: "website",
+    locale: "ko_KR",
+    siteName: "taskory",
+  },
+  twitter: { card: "summary" },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

@@ -29,11 +29,11 @@ export async function scoreAttempt(input: { examId: string; answers: Array<numbe
   };
   const correctCount = rows.reduce((total, question, index) => total + (correct(normalizedAnswers[index], question) ? 1 : 0), 0);
   const score = rows.length ? Math.round((correctCount / rows.length) * 100) : 0;
-  if (input.userId) await getDb().insert(attempts).values({ userId: input.userId, examId: input.examId, score, correctCount, totalCount: rows.length, answers: normalizedAnswers });
+  if (input.userId) await getDb().insert(attempts).values({ userId: input.userId, examId: input.examId, examTitle: exam.title, score, correctCount, totalCount: rows.length, answers: normalizedAnswers });
   return { score, correctCount, totalCount: rows.length, passed: exam.passScore === null ? null : score >= exam.passScore, passScore: exam.passScore, review: input.userId ? rows.map((question, index) => ({ questionId: question.id, selectedAnswer: normalizedAnswers[index], correctAnswer: question.questionType === "objective" ? Number(question.correctAnswer) : question.correctAnswer, explanation: question.explanation ?? "", correct: correct(normalizedAnswers[index], question) })) : null };
 }
 
 export async function listUserAttempts(userId: string) {
-  const rows = await getDb().select({ id: attempts.id, examId: attempts.examId, examTitle: exams.title, score: attempts.score, correctCount: attempts.correctCount, totalCount: attempts.totalCount, completedAt: attempts.completedAt }).from(attempts).leftJoin(exams, eq(attempts.examId, exams.id)).where(eq(attempts.userId, userId)).orderBy(desc(attempts.completedAt)).limit(20);
-  return rows.map((attempt) => ({ ...attempt, examTitle: attempt.examTitle ?? attempt.examId }));
+  const rows = await getDb().select({ id: attempts.id, examId: attempts.examId, examTitle: attempts.examTitle, score: attempts.score, correctCount: attempts.correctCount, totalCount: attempts.totalCount, completedAt: attempts.completedAt }).from(attempts).where(eq(attempts.userId, userId)).orderBy(desc(attempts.completedAt)).limit(20);
+  return rows;
 }

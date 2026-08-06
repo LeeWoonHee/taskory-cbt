@@ -45,6 +45,7 @@ export const attempts = pgTable("attempts", {
   id: uuid("id").defaultRandom().primaryKey(),
   userId: uuid("user_id").references(() => users.id, { onDelete: "set null" }),
   examId: varchar("exam_id", { length: 160 }).notNull(),
+  examTitle: varchar("exam_title", { length: 200 }).notNull(),
   score: integer("score").notNull(),
   correctCount: integer("correct_count").notNull(),
   totalCount: integer("total_count").notNull(),

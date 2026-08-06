@@ -22,3 +22,8 @@ export async function listExamCatalog(query = "") {
   const normalized = query.trim().toLowerCase();
   return [...groups.values()].map(({ levelMap, directPapers, ...series }) => ({ ...series, levels: [...levelMap.entries()].map(([label, papers]) => ({ id: `${series.id}-${label}`, label, papers })), ...(directPapers.length ? { papers: directPapers } : {}) })).filter((series) => !normalized || [series.title, series.category, series.organization, ...series.levels.map((level) => level.label), ...series.levels.flatMap((level) => level.papers.flatMap((paper) => [String(paper.year), String(paper.month ?? ""), String(paper.round ?? "")])), ...(series.papers ?? []).flatMap((paper) => [String(paper.year), String(paper.month ?? ""), String(paper.round ?? "")])].some((value) => value.toLowerCase().includes(normalized)));
 }
+
+export async function listPublishedExamIds() {
+  const rows = await getDb().select({ id: exams.id }).from(exams).where(eq(exams.status, "published"));
+  return rows.map((row) => row.id);
+}
