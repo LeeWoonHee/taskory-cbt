@@ -5,6 +5,7 @@ import "./globals.css";
 
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { AdSenseScript } from "@/components/adsense-script";
 
 export const metadata: Metadata = {
   title: "taskory | CBT 시험",
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko" className="h-full antialiased">
       <body className="flex min-h-full flex-col bg-white">
+        <AdSenseScript />
         <SiteHeader />
         {children}
         <SiteFooter />

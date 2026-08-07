@@ -29,7 +29,10 @@ bun run dev
 DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require
 SESSION_SECRET=32자 이상의 임의 문자열
 ADMIN_EMAIL=최초 관리자 계정으로 사용할 이메일
-NEXT_PUBLIC_ADSENSE_CLIENT_ID=
+NEXT_PUBLIC_ADSENSE_CLIENT_ID=ca-pub-발급받은_클라이언트_ID
+NEXT_PUBLIC_ADSENSE_PUBLISHER_ID=pub-발급받은_게시자_ID
+NEXT_PUBLIC_ADSENSE_HOME_SLOT_ID=홈_광고_단위_ID
+NEXT_PUBLIC_ADSENSE_EXAMS_SLOT_ID=시험목록_광고_단위_ID
 ```
 
 ## 데이터베이스
@@ -77,3 +80,16 @@ bun run db:migrate
 3. `vercel --prod` 또는 Vercel Git 연동으로 배포합니다.
 
 Elysia는 Next.js Route Handler의 Web Standard `Request`/`Response` 위에서 실행되므로 별도 백엔드 서버가 필요하지 않습니다.
+
+## Google AdSense 설정
+
+1. [Google AdSense](https://www.google.com/adsense/)에서 사이트를 등록하고 사이트 심사를 요청합니다.
+2. AdSense의 사이트 설정에서 확인한 클라이언트 ID(`ca-pub-...`)와 게시자 ID(`pub-...`)를 로컬 `.env.local` 및 Vercel 환경 변수에 등록합니다.
+3. AdSense에서 반응형 디스플레이 광고 단위를 만든 뒤 광고 단위 ID를 `NEXT_PUBLIC_ADSENSE_HOME_SLOT_ID`와 `NEXT_PUBLIC_ADSENSE_EXAMS_SLOT_ID`에 각각 등록합니다.
+4. 재배포 후 `https://내도메인/ads.txt`에서 아래 형식의 응답이 보이는지 확인합니다.
+
+```text
+google.com, pub-게시자_ID, DIRECT, f08c47fec0942fa0
+```
+
+광고 스크립트와 광고 단위는 해당 환경 변수가 모두 설정된 경우에만 렌더링됩니다. 환경 변수가 비어 있으면 사이트에서 광고 영역을 숨기며, `/ads.txt`는 404를 반환합니다.

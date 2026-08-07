@@ -1,5 +1,6 @@
 import { ExamCatalogExplorer } from "@/components/exam-catalog-explorer";
 import { ExamSearch } from "@/components/exam-search";
+import { AdSenseUnit } from "@/components/adsense-unit";
 import { listExamCatalog } from "@/services/catalog-service";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +27,9 @@ export default async function ExamsPage({
 
           <ExamSearch initialQuery={q} />
         </section>
+        <div className="mt-8">
+          <AdSenseUnit slotId={process.env.NEXT_PUBLIC_ADSENSE_EXAMS_SLOT_ID} label="시험 목록 광고" />
+        </div>
         <div className="mt-12 flex items-center justify-between">
           <h2 className="text-xl font-extrabold text-[#20242a]">
             {q ? `“${q}” 검색 결과` : "전체 시험"}

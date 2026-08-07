@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 
 import { ExamCatalogExplorer } from "@/components/exam-catalog-explorer";
 import { SearchHero } from "@/components/search-hero";
+import { AdSenseUnit } from "@/components/adsense-unit";
 import { listExamCatalog } from "@/services/catalog-service";
 
 export const dynamic = "force-dynamic";
@@ -143,6 +144,9 @@ export default async function Home() {
         <SearchHero
           keywords={examSeries.map((series) => series.title).slice(0, 3)}
         />
+        <div className="mt-8">
+          <AdSenseUnit slotId={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT_ID} label="홈페이지 광고" />
+        </div>
         <section className="mt-16">
           <div className="flex items-end justify-between gap-5 border-b border-[#dfe3e8] pb-5">
             <div>
