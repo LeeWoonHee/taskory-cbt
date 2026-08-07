@@ -86,12 +86,20 @@ export const api = new Elysia({ prefix: "/api" })
   .post("/auth/register", async ({ body, set, status }) => {
     if (!isDatabaseConfigured() || !process.env.SESSION_SECRET) return status(503, { message: "회원 기능을 사용하려면 DATABASE_URL과 SESSION_SECRET을 설정해 주세요." });
     try { const user = await registerUser(body); set.headers["set-cookie"] = createSessionCookie(await createSessionToken(user)); return { user }; }
-    catch (error) { return status(400, { message: error instanceof Error ? error.message : "회원가입에 실패했습니다." }); }
+    catch (error) {
+      if (error instanceof Error && error.message === "이미 가입된 이메일입니다.") return status(400, { message: error.message });
+      console.error("[auth/register] failed", error);
+      return status(500, { message: "회원가입 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요." });
+    }
   }, { body: t.Object({ name: t.String({ minLength: 2, maxLength: 120 }), email: t.String({ format: "email", maxLength: 320 }), password: t.String({ minLength: 8, maxLength: 72 }) }) })
   .post("/auth/login", async ({ body, set, status }) => {
     if (!isDatabaseConfigured() || !process.env.SESSION_SECRET) return status(503, { message: "회원 기능을 사용하려면 DATABASE_URL과 SESSION_SECRET을 설정해 주세요." });
     try { const user = await loginUser(body); set.headers["set-cookie"] = createSessionCookie(await createSessionToken(user)); return { user }; }
-    catch (error) { return status(401, { message: error instanceof Error ? error.message : "로그인에 실패했습니다." }); }
+    catch (error) {
+      if (error instanceof Error && error.message === "이메일 또는 비밀번호를 확인해 주세요.") return status(401, { message: error.message });
+      console.error("[auth/login] failed", error);
+      return status(500, { message: "로그인 처리 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요." });
+    }
   }, { body: t.Object({ email: t.String({ format: "email", maxLength: 320 }), password: t.String({ minLength: 8, maxLength: 72 }) }) })
   .get("/auth/me", async ({ request }) => ({ user: await getCurrentUser(request) }))
   .post("/auth/logout", ({ set }) => { set.headers["set-cookie"] = clearSessionCookie(); return { success: true }; });

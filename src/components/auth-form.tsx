@@ -19,10 +19,13 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
     const payload = Object.fromEntries(formData.entries());
     try {
       const response = await fetch(`/api/auth/${isSignup ? "register" : "login"}`, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
-      const result = await response.json() as { message?: string };
-      if (!response.ok) throw new Error(result.message ?? "요청을 처리하지 못했습니다.");
+      const result = await response.json().catch(() => null) as { message?: string } | null;
+      if (!response.ok) {
+        const fallback = response.status >= 500 ? "서비스에 일시적인 문제가 발생했습니다. 잠시 후 다시 시도해 주세요." : "입력한 정보를 확인해 주세요.";
+        throw new Error(result?.message ?? fallback);
+      }
       router.push("/mypage"); router.refresh();
-    } catch (error) { setMessage(error instanceof Error ? error.message : "요청을 처리하지 못했습니다."); }
+    } catch (error) { setMessage(error instanceof Error ? error.message : "네트워크 연결을 확인한 뒤 다시 시도해 주세요."); }
     finally { setLoading(false); }
   }
   return (

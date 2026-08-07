@@ -7,6 +7,32 @@ import { useEffect, useMemo, useState } from "react";
 type Attempt = { id: string; examTitle: string; score: number; correctCount: number; totalCount: number; completedAt: string };
 type MeResponse = { user: { name: string; email: string }; attempts: Attempt[] };
 
+function MypageSkeleton() {
+  return (
+    <main className="flex-1 bg-white" aria-busy="true" aria-label="회원 정보를 불러오는 중입니다">
+      <div className="mx-auto w-full max-w-[1200px] px-5 py-12 sm:px-8 lg:py-20">
+        <section className="flex flex-col gap-8 rounded-[28px] border border-[#dfe3e8] bg-[#f7f8fa] p-7 sm:p-10 lg:p-12">
+          <div className="flex items-center gap-5">
+            <div className="size-16 shrink-0 animate-pulse rounded-3xl bg-[#e5e9ef]" />
+            <div className="flex w-full max-w-sm flex-col gap-3">
+              <div className="h-4 w-24 animate-pulse rounded bg-[#dfe4eb]" />
+              <div className="h-9 w-64 max-w-full animate-pulse rounded bg-[#dfe4eb]" />
+              <div className="h-4 w-48 max-w-full animate-pulse rounded bg-[#e5e9ef]" />
+            </div>
+          </div>
+        </section>
+        <section className="mt-8 flex flex-wrap gap-4">
+          {["응시한 시험", "평균 점수", "최근 응시"].map((label) => <article key={label} className="flex min-h-36 min-w-[220px] flex-1 items-start justify-between rounded-3xl border border-[#e0e3e7] bg-white p-6"><div className="flex flex-col gap-4"><div className="h-4 w-20 animate-pulse rounded bg-[#e5e9ef]" /><div className="h-7 w-24 animate-pulse rounded bg-[#dfe4eb]" /></div><div className="size-10 animate-pulse rounded-2xl bg-[#eef1f5]" /></article>)}
+        </section>
+        <section className="mt-8 rounded-[28px] border border-[#e0e3e7] bg-white p-7 sm:p-10">
+          <div className="flex items-center justify-between"><div className="h-6 w-32 animate-pulse rounded bg-[#dfe4eb]" /><div className="h-4 w-16 animate-pulse rounded bg-[#e5e9ef]" /></div>
+          <div className="mt-7 flex flex-col gap-5">{[1, 2, 3].map((item) => <div key={item} className="flex items-center justify-between border-t border-[#eceef1] py-5"><div className="flex flex-col gap-3"><div className="h-4 w-52 max-w-[60vw] animate-pulse rounded bg-[#dfe4eb]" /><div className="h-3 w-36 animate-pulse rounded bg-[#e5e9ef]" /></div><div className="h-6 w-14 animate-pulse rounded bg-[#dfe4eb]" /></div>)}</div>
+        </section>
+      </div>
+    </main>
+  );
+}
+
 export function MypageDashboard() {
   const [data, setData] = useState<MeResponse | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -16,6 +42,8 @@ export function MypageDashboard() {
   }, []);
 
   const average = useMemo(() => data?.attempts.length ? Math.round(data.attempts.reduce((sum, attempt) => sum + attempt.score, 0) / data.attempts.length) : null, [data]);
+
+  if (!loaded) return <MypageSkeleton />;
 
   return (
     <main className="flex-1 bg-white">

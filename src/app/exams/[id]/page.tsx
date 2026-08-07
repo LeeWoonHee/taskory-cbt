@@ -15,5 +15,11 @@ export default async function ExamPage({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const exam = await getPublicExam(id);
   if (!exam) notFound();
-  return <ExamRunner exam={exam} />;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://taskory-cbt.vercel.app";
+  const description = `${exam.title} 문제를 CBT 방식으로 풀고 점수와 정답을 확인하세요.`;
+  const examJsonLd = JSON.stringify({ "@context": "https://schema.org", "@type": "Quiz", name: exam.title, description, url: `${siteUrl}/exams/${id}`, isAccessibleForFree: true, educationalUse: "시험 연습", provider: { "@type": "Organization", name: "taskory", url: siteUrl }, numberOfQuestions: exam.questions.length }).replace(/</g, "\\u003c");
+  return <>
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: examJsonLd }} />
+    <ExamRunner exam={exam} />
+  </>;
 }
