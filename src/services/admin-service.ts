@@ -38,3 +38,9 @@ export async function updateUserRole(userId: string, role: "user" | "admin", cur
   const [user] = await getDb().update(users).set({ role }).where(eq(users.id, userId)).returning({ id: users.id, name: users.name, email: users.email, role: users.role });
   return user ?? null;
 }
+
+export async function deleteUser(userId: string, currentUserId: string) {
+  if (userId === currentUserId) return null;
+  const [user] = await getDb().delete(users).where(eq(users.id, userId)).returning({ id: users.id, name: users.name, email: users.email });
+  return user ?? null;
+}

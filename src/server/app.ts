@@ -2,7 +2,7 @@ import { Elysia, t } from "elysia";
 
 import { getDb, isDatabaseConfigured } from "@/db";
 import { createSessionCookie, createSessionToken, clearSessionCookie, getAdminUser, getCurrentUser, loginUser, registerUser } from "@/services/auth-service";
-import { deleteExam, getAdminOverview, updateExamStatus, updateUserRole } from "@/services/admin-service";
+import { deleteExam, deleteUser, getAdminOverview, updateExamStatus, updateUserRole } from "@/services/admin-service";
 import { parseExamSpreadsheet } from "@/services/exam-import-service";
 import { exams, questions } from "@/db/schema";
 import { listExamCatalog } from "@/services/catalog-service";
@@ -35,6 +35,12 @@ export const api = new Elysia({ prefix: "/api" })
     const updated = await updateUserRole(params.id, body.role, user.id);
     return updated ?? status(400, { message: "자기 자신을 일반 회원으로 변경할 수 없습니다." });
   }, { params: t.Object({ id: t.String({ minLength: 1 }) }), body: t.Object({ role: t.Union([t.Literal("user"), t.Literal("admin")]) }) })
+  .delete("/admin/users/:id", async ({ params, request, status }) => {
+    const user = await getAdminUser(request);
+    if (!user) return status(403, { message: "관리자 권한이 필요합니다." });
+    const deleted = await deleteUser(params.id, user.id);
+    return deleted ?? status(400, { message: "자기 자신은 삭제할 수 없거나 회원을 찾을 수 없습니다." });
+  }, { params: t.Object({ id: t.String({ minLength: 1 }) }) })
   .patch("/admin/exams/:id/status", async ({ params, body, request, status }) => {
     if (!await getAdminUser(request)) return status(403, { message: "관리자 권한이 필요합니다." });
     const updated = await updateExamStatus(params.id, body.status);
