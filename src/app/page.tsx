@@ -47,6 +47,8 @@ const KEYWORDS = [
   "전산세무 1급",
   "전산세무 2급",
   "재경관리사",
+  "국가직 공문원",
+  "공문원",
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -145,7 +147,10 @@ export default async function Home() {
           keywords={examSeries.map((series) => series.title).slice(0, 3)}
         />
         <div className="mt-8">
-          <AdSenseUnit slotId={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT_ID} label="홈페이지 광고" />
+          <AdSenseUnit
+            slotId={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT_ID}
+            label="홈페이지 광고"
+          />
         </div>
         <section className="mt-16">
           <div className="flex items-end justify-between gap-5 border-b border-[#dfe3e8] pb-5">
