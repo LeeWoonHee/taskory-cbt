@@ -49,7 +49,7 @@ export function MypageDashboard() {
     <main className="flex-1 bg-white">
       <div className="mx-auto w-full max-w-[1200px] px-5 py-12 sm:px-8 lg:py-20">
         <section className="flex flex-col justify-between gap-8 rounded-[28px] border border-[#dfe3e8] bg-[#f7f8fa] p-7 sm:p-10 lg:flex-row lg:items-center lg:p-12">
-          <div className="flex items-center gap-5"><span className="flex size-16 items-center justify-center rounded-3xl bg-white text-[#2563eb] shadow-sm"><UserCircleIcon size={34} weight="duotone" /></span><div><p className="text-sm font-bold text-[#2563eb]">마이페이지</p><h1 className="mt-1 text-3xl font-extrabold tracking-[-0.04em]">{data ? `${data.user.name}님의 학습 기록` : "학습 기록"}</h1><p className="mt-2 text-sm text-[#7d848e]">{data ? data.user.email : "로그인하면 응시 결과와 오답 기록이 여기에 저장됩니다."}</p></div></div>
+          <div className="flex min-w-0 items-center gap-5"><span className="flex size-16 shrink-0 items-center justify-center rounded-3xl bg-white text-[#2563eb] shadow-sm"><UserCircleIcon size={34} weight="duotone" /></span><div className="min-w-0"><p className="text-sm font-bold text-[#2563eb]">마이페이지</p><h1 className="mt-1 text-2xl font-extrabold tracking-[-0.04em] sm:text-3xl">{data ? `${data.user.name}님의 학습 기록` : "학습 기록"}</h1><p className="mt-2 text-sm text-[#7d848e]">{data ? data.user.email : "로그인하면 응시 결과와 오답 기록이 여기에 저장됩니다."}</p></div></div>
           {!data && loaded && <Link href="/login" className="flex h-12 items-center justify-between rounded-2xl bg-[#17191c] px-5 text-sm font-bold text-white lg:min-w-44">로그인하기<ArrowRightIcon size={18} /></Link>}
         </section>
         <section className="mt-8 flex flex-wrap gap-4">
