@@ -57,12 +57,12 @@ export async function generateMetadata(): Promise<Metadata> {
     const titles = [...new Set(series.map((item) => item.title))];
     const titleText = titles.slice(0, 6).join(", ");
     const description = titleText
-      ? `${titleText} 기출문제를 CBT 방식으로 풀고 점수와 학습 기록을 확인하세요.`
+      ? `기출문제를 CBT 방식으로 풀고 점수와 학습 기록을 확인하세요. 서비스 중인 자격증 시험:${titleText}`
       : "자격증 시험 문제를 CBT 방식으로 풀고 결과를 확인하는 시험 연습 서비스입니다.";
     return {
       title: titleText
-        ? `${titleText} CBT 시험 연습 | taskory`
-        : "taskory | CBT 시험",
+        ? `CBT 시험 연습 | taskory CBT`
+        : "taskory CBT | CBT 시험",
       description,
       keywords: [
         ...titles,
@@ -72,9 +72,7 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
       alternates: { canonical: "/" },
       openGraph: {
-        title: titleText
-          ? `${titleText} CBT 시험 연습 | taskory`
-          : "taskory | CBT 시험",
+        title: titleText ? `CBT 시험 연습 | taskory CBT` : "taskory | CBT 시험",
         description,
         type: "website",
       },

@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const exam = await getPublicExam(id);
   if (!exam) return { title: "시험을 찾을 수 없습니다 | taskory" };
-  return { title: `${exam.title} | taskory`, description: `${exam.title} 문제를 CBT 방식으로 풀고 결과를 확인하세요.`, alternates: { canonical: `/exams/${id}` }, openGraph: { title: `${exam.title} | taskory`, description: `${exam.title} 문제를 CBT 방식으로 풀고 결과를 확인하세요.`, type: "article" } };
+  return { title: `${exam.title} | taskory`, description: `${exam.title} 문제를 CBT 방식으로 풀고 결과를 확인하세요.`, keywords: [exam.title, `${exam.title} 기출문제`, `${exam.title} CBT`, "CBT", "기출문제"], alternates: { canonical: `/exams/${id}` }, openGraph: { title: `${exam.title} | taskory`, description: `${exam.title} 문제를 CBT 방식으로 풀고 결과를 확인하세요.`, type: "article" } };
 }
 
 export default async function ExamPage({ params }: { params: Promise<{ id: string }> }) {

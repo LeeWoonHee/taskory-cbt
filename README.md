@@ -57,6 +57,7 @@ bun run db:migrate
 - `POST /api/auth/logout`
 - `GET /api/admin/overview` (관리자 전용)
 - `PATCH /api/admin/users/:id/role` (관리자 전용)
+- `PATCH /api/admin/exams/:id` (관리자 전용, 시험명 변경)
 - `POST /api/admin/exams/import` (관리자 전용, `.xlsx`/`.xls`/`.csv`)
 
 ## 관리자 페이지

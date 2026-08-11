@@ -28,6 +28,11 @@ export async function updateExamStatus(examId: string, status: "draft" | "publis
   return exam ?? null;
 }
 
+export async function updateExamTitle(examId: string, title: string) {
+  const [exam] = await getDb().update(exams).set({ title }).where(eq(exams.id, examId)).returning({ id: exams.id, title: exams.title });
+  return exam ?? null;
+}
+
 export async function deleteExam(examId: string) {
   const [exam] = await getDb().delete(exams).where(eq(exams.id, examId)).returning({ id: exams.id });
   return exam ?? null;
