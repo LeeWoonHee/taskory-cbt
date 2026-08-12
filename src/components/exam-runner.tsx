@@ -12,10 +12,12 @@ export function ExamRunner({ exam }: { exam: { id: string; title: string; passSc
   const [answers, setAnswers] = useState<Array<number | string | null>>(() => exam.questions.map(() => null));
   const [result, setResult] = useState<Result | null>(null);
   const [loading, setLoading] = useState(false);
+  const [mobileNavigatorOpen, setMobileNavigatorOpen] = useState(false);
   const answered = answers.filter((answer) => answer !== null).length;
 
   function scrollToQuestion(index: number) {
-    document.getElementById(`question-${exam.questions[index].id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById(`question-${exam.questions[index].id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    setMobileNavigatorOpen(false);
   }
 
   async function submit() {
@@ -48,8 +50,8 @@ export function ExamRunner({ exam }: { exam: { id: string; title: string; passSc
 
   return (
     <main className="flex-1 bg-[#f7f8fa]">
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-5 px-5 py-8 sm:px-8 lg:flex-row lg:items-start lg:px-12 lg:py-12">
-        <aside className="order-1 w-full rounded-3xl border border-[#e0e3e7] bg-white p-5 lg:sticky lg:top-5 lg:order-1 lg:w-72 lg:shrink-0 lg:p-6">
+      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-5 px-5 pb-28 pt-8 sm:px-8 sm:pb-8 lg:flex-row lg:items-start lg:px-12 lg:py-12">
+        <aside className="order-1 hidden w-full rounded-3xl border border-[#e0e3e7] bg-white p-5 lg:sticky lg:top-5 lg:order-1 lg:block lg:w-72 lg:shrink-0 lg:p-6">
           <div className="flex items-end justify-between border-b border-[#e9ecf0] pb-5"><div><p className="text-xs font-semibold text-[#8a9099]">답안 현황</p><p className="mt-1 text-xl font-extrabold">{answered}<span className="text-sm font-medium text-[#9ba0a8]"> / {exam.questions.length}</span></p></div><p className="text-xs font-semibold text-[#6b7280]">문항 이동</p></div>
           <div className="mt-5 flex flex-wrap gap-2">{exam.questions.map((item, index) => <button key={item.id} type="button" onClick={() => scrollToQuestion(index)} aria-label={`${index + 1}번 문항으로 이동`} className={answers[index] !== null ? "flex size-10 items-center justify-center rounded-xl bg-[#20242a] text-sm font-bold text-white" : "flex size-10 items-center justify-center rounded-xl border border-[#dde1e6] bg-white text-sm font-bold text-[#626a75]"}>{index + 1}</button>)}</div>
           <button type="button" disabled={loading} onClick={submit} className="mt-7 h-12 w-full rounded-2xl bg-[#17191c] text-sm font-bold text-white transition-colors hover:bg-[#2563eb] disabled:opacity-50">{loading ? "제출 중..." : "답안 제출"}</button>
@@ -65,6 +67,11 @@ export function ExamRunner({ exam }: { exam: { id: string; title: string; passSc
           })}</div>
           <div className="flex flex-col items-start justify-between gap-4 pt-8 sm:flex-row sm:items-center"><p className="text-sm font-medium text-[#727983]">답안 현황 {answered} / {exam.questions.length}</p><button type="button" disabled={loading} onClick={submit} className="h-12 rounded-2xl bg-[#17191c] px-7 text-sm font-bold text-white transition-colors hover:bg-[#2563eb] disabled:opacity-50">{loading ? "제출 중..." : "답안 제출"}</button></div>
         </section>
+      </div>
+      {mobileNavigatorOpen && <button type="button" className="fixed inset-0 z-40 bg-black/20 sm:hidden" onClick={() => setMobileNavigatorOpen(false)} aria-label="문항 이동 닫기" />}
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[#dfe3e8] bg-white/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 shadow-[0_-8px_24px_rgba(23,25,28,0.08)] backdrop-blur sm:hidden">
+        {mobileNavigatorOpen && <div className="absolute bottom-full left-0 right-0 max-h-[min(60vh,28rem)] overflow-y-auto rounded-t-3xl border border-[#dfe3e8] bg-white p-5 shadow-[0_-12px_32px_rgba(23,25,28,0.12)]"><div className="flex items-center justify-between"><div><p className="text-sm font-extrabold text-[#20242a]">문항 이동</p><p className="mt-1 text-xs text-[#8a9099]">답변한 문항 {answered} / {exam.questions.length}</p></div><button type="button" onClick={() => setMobileNavigatorOpen(false)} className="rounded-xl px-3 py-2 text-xs font-bold text-[#69727e]">닫기</button></div><div className="mt-4 flex flex-wrap gap-2">{exam.questions.map((item, index) => <button key={item.id} type="button" onClick={() => scrollToQuestion(index)} aria-label={`${index + 1}번 문항으로 이동`} className={answers[index] !== null ? "relative flex size-10 items-center justify-center rounded-xl bg-[#20242a] text-sm font-bold text-white" : "relative flex size-10 items-center justify-center rounded-xl border border-[#dde1e6] bg-white text-sm font-bold text-[#626a75]"}>{index + 1}</button>)}</div></div>}
+        <div className="mx-auto flex max-w-lg items-center gap-2"><div className="min-w-0 flex-1"><p className="text-xs font-semibold text-[#8a9099]">답안 현황</p><p className="mt-0.5 text-base font-extrabold text-[#20242a]">{answered}<span className="text-xs font-medium text-[#9ba0a8]"> / {exam.questions.length}</span></p></div><button type="button" onClick={() => setMobileNavigatorOpen((open) => !open)} aria-expanded={mobileNavigatorOpen} className="h-11 rounded-xl border border-[#dfe3e8] bg-white px-4 text-sm font-bold text-[#414750]">문항 이동</button><button type="button" disabled={loading} onClick={submit} className="h-11 rounded-xl bg-[#17191c] px-4 text-sm font-bold text-white disabled:opacity-50">{loading ? "제출 중..." : "제출하기"}</button></div>
       </div>
     </main>
   );
