@@ -84,7 +84,7 @@ export const api = new Elysia({ prefix: "/api" })
       const invalidQuestion = parsed.questions.find((question) => question.prompt.length > 10000 || question.correctAnswer.length > 1000 || (question.context?.length ?? 0) > 20000 || (question.explanation?.length ?? 0) > 20000 || (question.options ?? []).some((option) => option.length > 2000));
       if (invalidQuestion) return status(400, { message: "문제, 선택지, 지문, 정답 또는 해설의 입력 길이를 확인해 주세요." });
       if (!isDatabaseConfigured()) return status(503, { message: "엑셀 검증이 완료되었습니다. 실제 저장하려면 DATABASE_URL을 설정해 주세요.", questions: parsed.questions });
-      const examId = `admin-${crypto.randomUUID()}`;
+      const examId = crypto.randomUUID();
       await getDb().transaction(async (tx) => {
         await tx.insert(exams).values({ id: examId, seriesId: examId, title: examMetadata.title!.trim(), level: examMetadata.level?.trim() || null, examYear: year, examMonth: month, examRound: null, category: null, organization: null, passScore: null, sourceName: examMetadata.sourceName?.trim() || null, sourceUrl: examMetadata.sourceUrl?.trim() || null, status: examMetadata.status === "published" ? "published" : "draft", publishedAt: examMetadata.status === "published" ? new Date() : null });
         await tx.insert(questions).values(parsed.questions.map((question, index) => ({ examId, order: index + 1, questionType: question.questionType, prompt: question.prompt, context: question.context, options: question.options, correctAnswer: question.correctAnswer, explanation: question.explanation })));
