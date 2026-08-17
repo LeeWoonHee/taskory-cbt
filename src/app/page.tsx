@@ -37,6 +37,8 @@ const KEYWORDS = [
   "자격증 시험 모의고사",
   "자격증 사이트",
   "무료 자격증",
+  "무료 자격증 시험",
+  "무료 자격증 시험 문제",
   "자격증 추천",
   "50대 자격증 추천",
   "무료 자격증 사이트",
@@ -67,6 +69,7 @@ const KEYWORDS = [
   "재경관리사",
   "국가직 공무원",
   "공무원",
+  "컴퓨터활용능력",
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
