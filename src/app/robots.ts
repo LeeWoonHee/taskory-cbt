@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://taskory-cbt.vercel.app";
-  return { rules: [{ userAgent: "*", allow: "/", disallow: ["/admin", "/api/"] }], sitemap: `${baseUrl}/sitemap.xml` };
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://taskory.work";
+  return {
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/admin", "/api/"] }],
+    sitemap: `${baseUrl}/sitemap.xml`,
+  };
 }
