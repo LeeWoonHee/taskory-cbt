@@ -87,6 +87,7 @@ export async function generateMetadata(): Promise<Metadata> {
         ...titles,
         ...titles.map((title) => `${title} 기출문제`),
         ...titles.map((title) => `${title} CBT`),
+        ...titles.map((title) => `${title} 무료 시험`),
         ...KEYWORDS,
       ],
       alternates: { canonical: "/" },
