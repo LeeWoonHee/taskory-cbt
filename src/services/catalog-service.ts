@@ -6,8 +6,8 @@ import type { ExamPaper, ExamSeries } from "@/types/exams";
 
 type CatalogGroup = ExamSeries & { directPapers: ExamPaper[]; levelMap: Map<string, ExamPaper[]> };
 
-export async function listExamCatalog(query = "") {
-  const rows = await getDb().select({ id: exams.id, seriesId: exams.seriesId, title: exams.title, level: exams.level, examYear: exams.examYear, examMonth: exams.examMonth, examRound: exams.examRound, category: exams.category, organization: exams.organization }).from(exams).where(eq(exams.status, "published")).orderBy(desc(exams.examYear), desc(exams.examMonth));
+async function loadExamCatalog(query: string, sortByRegistration: boolean) {
+  const rows = await getDb().select({ id: exams.id, seriesId: exams.seriesId, title: exams.title, level: exams.level, examYear: exams.examYear, examMonth: exams.examMonth, examRound: exams.examRound, category: exams.category, organization: exams.organization }).from(exams).where(eq(exams.status, "published")).orderBy(...(sortByRegistration ? [desc(exams.createdAt), desc(exams.examYear), desc(exams.examMonth)] : [desc(exams.examYear), desc(exams.examMonth)]));
   const groups = new Map<string, CatalogGroup>();
   for (const row of rows) {
     const paper: ExamPaper = { id: row.id, year: row.examYear, ...(row.examMonth ? { month: row.examMonth } : {}), ...(row.examRound ? { round: row.examRound } : {}), status: "available" };
@@ -23,6 +23,15 @@ export async function listExamCatalog(query = "") {
   }
   const normalized = query.trim().toLowerCase();
   return [...groups.values()].map(({ levelMap, directPapers, ...series }) => ({ ...series, levels: [...levelMap.entries()].map(([label, papers]) => ({ id: `${series.id}-${label}`, label, papers })), ...(directPapers.length ? { papers: directPapers } : {}) })).filter((series) => !normalized || [series.title, series.category, series.organization, ...series.levels.map((level) => level.label), ...series.levels.flatMap((level) => level.papers.flatMap((paper) => [String(paper.year), String(paper.month ?? ""), String(paper.round ?? "")])), ...(series.papers ?? []).flatMap((paper) => [String(paper.year), String(paper.month ?? ""), String(paper.round ?? "")])].some((value) => value.toLowerCase().includes(normalized)));
+}
+
+export async function listExamCatalog(query = "") {
+  return loadExamCatalog(query, false);
+}
+
+export async function listRecentlyRegisteredExamCatalog(limit = 3) {
+  const series = await loadExamCatalog("", true);
+  return series.slice(0, limit);
 }
 
 export async function listPublishedExamIds() {

@@ -4,7 +4,10 @@ import type { Metadata } from "next";
 import { ExamCatalogExplorer } from "@/components/exam-catalog-explorer";
 import { SearchHero } from "@/components/search-hero";
 import { AdSenseUnit } from "@/components/adsense-unit";
-import { listExamCatalog } from "@/services/catalog-service";
+import {
+  listExamCatalog,
+  listRecentlyRegisteredExamCatalog,
+} from "@/services/catalog-service";
 
 export const dynamic = "force-dynamic";
 
@@ -107,8 +110,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const examSeries = await listExamCatalog();
-  const examItems = examSeries
+  const recentExamSeries = await listRecentlyRegisteredExamCatalog();
+  const examItems = recentExamSeries
     .flatMap((series) => [
       ...(series.papers ?? []).map((paper) => ({
         id: paper.id,
@@ -162,7 +165,7 @@ export default async function Home() {
       )}
       <div className="mx-auto w-full max-w-[1200px] px-5 pb-16 pt-8 sm:px-8 lg:pt-12">
         <SearchHero
-          keywords={examSeries.map((series) => series.title).slice(0, 3)}
+          keywords={recentExamSeries.map((series) => series.title)}
         />
         <div className="mt-8">
           <AdSenseUnit
@@ -175,19 +178,22 @@ export default async function Home() {
             <div>
               <p className="text-sm font-bold text-[#2563eb]">시험 탐색</p>
               <h2 className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-[#20242a]">
-                자격증, 급수, 연도로 찾기
+                최근 등록된 시험
               </h2>
+              <p className="mt-2 text-sm leading-6 text-[#777f89]">
+                최근 시험이 추가된 자격증과 등록된 전체 회차를 확인하세요.
+              </p>
             </div>
             <Link
               href="/exams"
               className="shrink-0 text-sm font-bold text-[#59616d] hover:text-[#2563eb]"
             >
-              전체 목록
+              시험 더보기
             </Link>
           </div>
           <div className="mt-2">
-            {examSeries.length ? (
-              <ExamCatalogExplorer series={examSeries.slice(0, 3)} />
+            {recentExamSeries.length ? (
+              <ExamCatalogExplorer series={recentExamSeries} />
             ) : (
               <div className="flex min-h-48 flex-col items-center justify-center rounded-3xl border border-[#e1e4e8] bg-[#fafbfc] px-5 text-center">
                 <p className="font-bold text-[#343a42]">
