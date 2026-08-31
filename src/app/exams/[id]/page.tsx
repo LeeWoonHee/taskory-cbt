@@ -6,7 +6,6 @@ import {
   ShieldCheckIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { buttonClasses } from "@/components/ui/button";
@@ -184,16 +183,15 @@ export default async function ExamPage({
               짧은 광고 1편을 시청하면 전체 {exam.questions.length}문항을 풀 수
               있습니다.
             </p>
-            <Link
+            <a
               href={`/exams/${id}/start`}
-              prefetch={false}
               className={buttonClasses(
                 "primary",
                 "mt-7 h-14 w-full rounded-2xl border-[#2563eb] bg-[#2563eb] text-base hover:bg-[#1f55cf]",
               )}
             >
               광고 보고 무료 응시
-            </Link>
+            </a>
             <div className="mt-5 flex items-start gap-3 border-t border-white/10 pt-5">
               <ShieldCheckIcon
                 size={19}
