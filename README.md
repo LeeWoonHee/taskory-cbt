@@ -82,6 +82,22 @@ bun run db:migrate
 
 Elysia는 Next.js Route Handler의 Web Standard `Request`/`Response` 위에서 실행되므로 별도 백엔드 서버가 필요하지 않습니다.
 
+## Google Analytics 4 설정
+
+1. Google Analytics에서 GA4 속성을 만들고 `관리 → 데이터 스트림 → 웹`에서 `https://www.taskory.work` 웹 스트림을 생성합니다.
+2. `G-`로 시작하는 측정 ID를 확인합니다.
+3. 로컬 `.env.local`과 Vercel 프로젝트 환경 변수에 다음 값을 등록합니다.
+
+```env
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+```
+
+4. Vercel을 다시 배포합니다. 값이 없거나 `G-` 형식이 아니면 Google Analytics 스크립트는 렌더링되지 않습니다.
+5. GA4 웹 스트림의 `향상된 측정`을 켭니다. 페이지 로드와 Next.js의 브라우저 기록 변경에 따른 페이지 조회가 자동으로 수집됩니다.
+6. 배포 후 GA4 `보고서 → 실시간` 또는 Google Tag Assistant에서 `page_view` 이벤트가 들어오는지 확인합니다.
+
+Google 태그를 Google Tag Manager에서도 별도로 설치하면 페이지 조회가 중복될 수 있으므로 이 프로젝트에서는 직접 설치한 Google 태그 한 가지만 사용합니다.
+
 ## Google AdSense 설정
 
 1. [Google AdSense](https://www.google.com/adsense/)에서 사이트를 등록하고 사이트 심사를 요청합니다.
