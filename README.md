@@ -128,6 +128,8 @@ AdSense의 `개인 정보 보호 및 메시지 → Offerwall`에서 다음과 �
 
 `src/components/offerwall-route-control.tsx`의 경로 정규식이 모든 시험 ID를 처리하므로 새 시험을 공개할 때 Offerwall URL을 개별 등록할 필요가 없습니다. AdSense 콘솔에서 시작 페이지가 제외되어 있으면 코드가 강제로 표시할 수 없으므로 페이지 제외 규칙은 함께 확인해야 합니다.
 
+Offerwall 노출 여부는 Google이 결정하며, 경로 제어 코드의 `proceed(true)`는 노출을 허용할 뿐 강제로 표시하지 않습니다. Responsively App은 실제 모바일 브라우저가 아닌 Electron 기반 미리보기 환경이므로 광고 노출 검증은 Chrome 시크릿 창의 기기 모드와 실제 모바일 브라우저에서 진행합니다. 특정 환경에서 모달이 보이지 않으면 게시된 시험 시작 URL(`/exams/{시험 ID}/start`)에 `?fc=alwaysshow&fctype=monetization`을 붙여 테스트합니다. 이 URL에서 모달이 나타나면 쿠키에 저장된 이용 권한이나 AdSense 노출 빈도 설정을 확인하고, 나타나지 않으면 해당 환경의 광고 스크립트 차단 여부와 AdSense의 사이트·URL 제외 설정을 확인합니다. 테스트 파라미터는 게시된 Offerwall과 AdSense 코드가 있는 페이지에서만 작동합니다.
+
 ## 문의 및 의견
 
 사이트 하단의 `문의 및 의견`에서 사용자의 기본 메일 앱을 열어 불편사항과 개선 의견을 보낼 수 있습니다. 접수 메일 주소는 `dldns012@gmail.com`입니다.

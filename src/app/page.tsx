@@ -61,8 +61,11 @@ const KEYWORDS = [
   "소방설비기사 기계분야",
   "위험물산업기사",
   "건축기사",
+  "정보통신산업기사",
   "정보처리산업기사",
   "정보처리기능사",
+  "전기기능사",
+  "직업상담사",
   "전산회계",
   "전산회계 1급",
   "전산회계 2급",
@@ -70,9 +73,13 @@ const KEYWORDS = [
   "전산세무 1급",
   "전산세무 2급",
   "재경관리사",
+  "지게차운전기능사",
   "국가직 공무원",
   "공무원",
   "컴퓨터활용능력",
+  "컴퓨터활용능력2급",
+  "스포츠경영관리사",
+  "사회조사분석사",
 ];
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -164,9 +171,7 @@ export default async function Home() {
         />
       )}
       <div className="mx-auto w-full max-w-[1200px] px-5 pb-16 pt-8 sm:px-8 lg:pt-12">
-        <SearchHero
-          keywords={recentExamSeries.map((series) => series.title)}
-        />
+        <SearchHero keywords={recentExamSeries.map((series) => series.title)} />
         <div className="mt-8">
           <AdSenseUnit
             slotId={process.env.NEXT_PUBLIC_ADSENSE_HOME_SLOT_ID}
