@@ -4,8 +4,9 @@ import { AuthShell } from "@/components/auth-shell";
 import { FeedbackForm } from "@/components/feedback-form";
 
 export const metadata: Metadata = {
-  title: "문의 및 의견 보내기 | taskory",
-  description: "taskory 이용 중 불편한 점이나 개선 의견을 보내 주세요.",
+  title: "문의 및 의견 보내기 | taskory CBT",
+  description: "taskory CBT 이용 중 불편한 점이나 개선 의견을 보내 주세요.",
+  alternates: { canonical: "/feedback" },
 };
 
 export default function FeedbackPage() {

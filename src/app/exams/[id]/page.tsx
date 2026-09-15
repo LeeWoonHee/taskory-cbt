@@ -6,9 +6,11 @@ import {
   ShieldCheckIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { buttonClasses } from "@/components/ui/button";
+import { SITE_URL } from "@/lib/site";
 import { getPublicExam } from "@/services/exam-service";
 
 export async function generateMetadata({
@@ -20,22 +22,44 @@ export async function generateMetadata({
   const exam = await getPublicExam(id);
   if (!exam) return { title: "시험을 찾을 수 없습니다 | taskory" };
 
-  const description = `${exam.title} ${exam.questions.length}문항을 미리 확인하고 CBT 방식으로 무료 응시하세요.`;
-  return {
-    title: `${exam.title} 기출문제 | taskory`,
-    description,
-    keywords: [
+  const rawTitle = exam.title.split(" · ")[0] ?? exam.title;
+  const spacedTitle = rawTitle.replace(/([가-힣]{2,3})(기능사|기사|산업기사|관리사)/g, "$1 $2");
+  const description = `${exam.title} 기출문제 ${exam.questions.length}문항을 실제 시험과 동일한 무료 CBT 환경에서 응시하고 즉시 채점 결과를 확인하세요.`;
+
+  const keywords = Array.from(
+    new Set([
       exam.title,
+      rawTitle,
+      spacedTitle,
       `${exam.title} 기출문제`,
-      `${exam.title} CBT`,
+      `${rawTitle} 기출문제`,
+      `${spacedTitle} 기출문제`,
+      `${rawTitle} CBT`,
+      `${spacedTitle} CBT`,
+      `${rawTitle} 필기`,
+      `${spacedTitle} 필기`,
       "CBT",
       "기출문제",
-    ],
+      "무료 기출문제",
+      "자격증 시험",
+    ]),
+  );
+
+  return {
+    title: `${exam.title} 기출문제 무료 CBT | taskory`,
+    description,
+    keywords,
     alternates: { canonical: `/exams/${id}` },
     openGraph: {
-      title: `${exam.title} 기출문제 | taskory`,
+      title: `${exam.title} 기출문제 무료 CBT | taskory`,
       description,
+      url: `${SITE_URL}/exams/${id}`,
       type: "article",
+    },
+    twitter: {
+      card: "summary",
+      title: `${exam.title} 기출문제 무료 CBT | taskory`,
+      description,
     },
   };
 }
@@ -54,22 +78,52 @@ export default async function ExamPage({
     10,
     Math.ceil(exam.questions.length / 10) * 10,
   );
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://taskory.work";
+  const siteUrl = SITE_URL;
   const description = `${exam.title} ${exam.questions.length}문항을 CBT 방식으로 풀고 점수와 정답을 확인하세요.`;
+
+  const examSubjects = Array.from(
+    new Set(exam.questions.map((q) => q.subject).filter(Boolean)),
+  );
+
   const examJsonLd = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Quiz",
-    name: exam.title,
+    name: `${exam.title} 기출문제`,
     description,
     url: `${siteUrl}/exams/${id}`,
     isAccessibleForFree: true,
-    educationalUse: "시험 연습",
+    educationalUse: "자격시험 기출문제 CBT 연습",
     provider: {
       "@type": "Organization",
-      name: "taskory",
+      name: "taskory CBT",
       url: siteUrl,
     },
     numberOfQuestions: exam.questions.length,
+  }).replace(/</g, "\\u003c");
+
+  const breadcrumbJsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "홈",
+        item: siteUrl,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "기출문제 목록",
+        item: `${siteUrl}/exams`,
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: exam.title,
+        item: `${siteUrl}/exams/${id}`,
+      },
+    ],
   }).replace(/</g, "\\u003c");
 
   return (
@@ -77,6 +131,10 @@ export default async function ExamPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: examJsonLd }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: breadcrumbJsonLd }}
       />
       <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-7 px-5 py-10 sm:px-8 lg:flex-row lg:items-start lg:gap-8 lg:py-16">
         <div className="flex min-w-0 flex-1 flex-col gap-7">
@@ -169,6 +227,61 @@ export default async function ExamPage({
               </article>
             </section>
           )}
+
+          <section className="rounded-[28px] border border-[#dfe3e8] bg-white p-7 sm:p-10">
+            <h2 className="text-xl font-extrabold text-[#20242a]">
+              {exam.title} 시험 안내 및 CBT 특징
+            </h2>
+            <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="rounded-2xl border border-[#e8ecf2] bg-[#f9fafc] p-5">
+                <p className="text-xs font-bold text-[#627184]">문항 수 및 합격 기준</p>
+                <p className="mt-2 text-base font-extrabold text-[#20242a]">
+                  총 {exam.questions.length}문항
+                  {exam.passScore ? ` · ${exam.passScore}점 이상 합격` : " · 60점 이상 합격 기준"}
+                </p>
+                <p className="mt-1 text-xs text-[#7e8794]">
+                  실제 시험 환경과 동일한 4지선다 객관식 및 주관식 문항으로 구성되어 있습니다.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-[#e8ecf2] bg-[#f9fafc] p-5">
+                <p className="text-xs font-bold text-[#627184]">CBT 즉시 채점 및 복습</p>
+                <p className="mt-2 text-base font-extrabold text-[#20242a]">
+                  제출 즉시 점수 및 해설 확인
+                </p>
+                <p className="mt-1 text-xs text-[#7e8794]">
+                  답안 제출 후 정답과 오답을 바로 확인하고 나의 점수를 확인할 수 있습니다.
+                </p>
+              </div>
+            </div>
+
+            {examSubjects.length > 0 && (
+              <div className="mt-6 border-t border-[#e8ecf2] pt-6">
+                <h3 className="text-sm font-bold text-[#424955]">포함된 시험 과목</h3>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {examSubjects.map((subject) => (
+                    <span
+                      key={subject}
+                      className="rounded-xl border border-[#d8e2f0] bg-[#f0f5fc] px-3.5 py-1.5 text-xs font-bold text-[#2e5aa6]"
+                    >
+                      {subject}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-6 border-t border-[#e8ecf2] pt-6 flex flex-wrap items-center justify-between gap-4">
+              <p className="text-xs text-[#7e8794]">
+                다른 연도 및 다른 자격증 기출문제를 찾고 계신가요?
+              </p>
+              <Link
+                href="/exams"
+                className="text-xs font-bold text-[#2563eb] hover:underline"
+              >
+                전체 자격증 기출문제 목록 보기 →
+              </Link>
+            </div>
+          </section>
         </div>
 
         <aside className="w-full shrink-0 lg:sticky lg:top-6 lg:w-[360px]">

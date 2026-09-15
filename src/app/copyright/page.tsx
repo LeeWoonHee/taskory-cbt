@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 
 import { LegalPage } from "@/components/legal-page";
 
-export const metadata: Metadata = { title: "문항 저작권 안내 | taskory", description: "taskory에 등록된 시험 문항과 출처에 대한 저작권 안내입니다." };
+export const metadata: Metadata = {
+  title: "문항 저작권 안내 | taskory CBT",
+  description:
+    "taskory CBT에 등록된 시험 문항과 출처에 대한 저작권 안내입니다.",
+  alternates: { canonical: "/copyright" },
+};
 
 export default function CopyrightPage() {
   return <LegalPage eyebrow="콘텐츠 안내" title="문항 저작권 안내" description="시험 문항의 출처와 이용 범위를 존중하며, 권리 침해 신고를 신속하게 처리합니다." sections={[

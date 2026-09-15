@@ -1,35 +1,38 @@
 import type { MetadataRoute } from "next";
 
-import { listPublishedExamIds } from "@/services/catalog-service";
+import { SITE_URL } from "@/lib/site";
+import { listPublishedExamsForSitemap } from "@/services/catalog-service";
 
 export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://taskory.work";
-  let examIds: string[] = [];
+  let publishedExams: Array<{ id: string; publishedAt: Date | null; createdAt: Date }> = [];
   try {
-    examIds = await listPublishedExamIds();
+    publishedExams = await listPublishedExamsForSitemap();
   } catch {
     /* DB가 준비되지 않은 환경에서도 기본 sitemap은 제공 */
   }
+
   const staticPaths = [
-    "/",
-    "/exams",
-    "/feedback",
-    "/terms",
-    "/privacy",
-    "/copyright",
+    { path: "/", changeFrequency: "daily" as const, priority: 1.0 },
+    { path: "/exams", changeFrequency: "daily" as const, priority: 0.9 },
+    { path: "/feedback", changeFrequency: "monthly" as const, priority: 0.4 },
+    { path: "/terms", changeFrequency: "monthly" as const, priority: 0.3 },
+    { path: "/privacy", changeFrequency: "monthly" as const, priority: 0.3 },
+    { path: "/copyright", changeFrequency: "monthly" as const, priority: 0.3 },
   ];
+
   return [
-    ...staticPaths.map((path) => ({
-      url: `${baseUrl}${path}`,
-      changeFrequency: path === "/" ? ("daily" as const) : ("monthly" as const),
-      priority: path === "/" ? 1 : 0.6,
+    ...staticPaths.map(({ path, changeFrequency, priority }) => ({
+      url: `${SITE_URL}${path}`,
+      changeFrequency,
+      priority,
     })),
-    ...examIds.map((id) => ({
-      url: `${baseUrl}/exams/${id}`,
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
+    ...publishedExams.map((exam) => ({
+      url: `${SITE_URL}/exams/${exam.id}`,
+      lastModified: exam.publishedAt ?? exam.createdAt,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
     })),
   ];
 }

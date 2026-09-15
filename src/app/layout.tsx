@@ -9,26 +9,64 @@ import { AdSenseScript } from "@/components/adsense-script";
 import { GoogleAnalytics } from "@/components/google-analytics";
 import { OfferwallRouteControl } from "@/components/offerwall-route-control";
 
+import { SITE_URL } from "@/lib/site";
+
 export const metadata: Metadata = {
-  title: "taskory | CBT 시험",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "taskory CBT | 무료 자격증 기출문제 시험 연습",
+    template: "%s",
+  },
   description:
-    "자격시험 문제를 CBT 환경에서 풀고 결과를 확인하는 시험 연습 서비스입니다.",
-  metadataBase: process.env.NEXT_PUBLIC_SITE_URL
-    ? new URL(process.env.NEXT_PUBLIC_SITE_URL)
-    : undefined,
-  other: {
-    "naver-site-verification": "87d00bd2d9575a9d65abee3c87fd3f11d0b7213d",
+    "지게차운전기능사, 컴퓨터활용능력 등 다양한 국가기술자격 및 전문자격 기출문제를 실제 CBT 환경에서 무료로 풀고 채점해 보세요.",
+  keywords: [
+    "CBT",
+    "CBT 시험",
+    "기출문제",
+    "자격증 기출문제",
+    "지게차운전기능사",
+    "지게차 운전기능사",
+    "지게차 기출문제",
+    "지게차운전기능사 기출문제",
+    "자격증 CBT",
+    "무료 기출문제",
+  ],
+  alternates: {
+    canonical: "/",
   },
-  alternates: { canonical: "/" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  verification: {
+    google:
+      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+    other: {
+      "naver-site-verification": "87d00bd2d9575a9d65abee3c87fd3f11d0b7213d",
+    },
+  },
   openGraph: {
-    title: "taskory | CBT 시험",
+    title: "taskory CBT | 무료 자격증 기출문제 시험 연습",
     description:
-      "자격시험 문제를 CBT 환경에서 풀고 결과를 확인하는 시험 연습 서비스입니다.",
-    type: "website",
+      "지게차운전기능사, 컴퓨터활용능력 등 다양한 국가기술자격 기출문제를 실제 CBT 환경에서 무료로 풀고 채점해 보세요.",
+    url: SITE_URL,
+    siteName: "taskory CBT",
     locale: "ko_KR",
-    siteName: "taskory",
+    type: "website",
   },
-  twitter: { card: "summary" },
+  twitter: {
+    card: "summary",
+    title: "taskory CBT | 무료 자격증 기출문제 시험 연습",
+    description:
+      "지게차운전기능사, 컴퓨터활용능력 등 다양한 국가기술자격 기출문제를 실제 CBT 환경에서 무료로 풀고 채점해 보세요.",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

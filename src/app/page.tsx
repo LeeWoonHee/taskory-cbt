@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { ExamCatalogExplorer } from "@/components/exam-catalog-explorer";
 import { SearchHero } from "@/components/search-hero";
 import { AdSenseUnit } from "@/components/adsense-unit";
+import { SITE_URL } from "@/lib/site";
 import {
   listExamCatalog,
   listRecentlyRegisteredExamCatalog,
@@ -132,8 +133,7 @@ export default async function Home() {
       ),
     ])
     .slice(0, 20);
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL ?? "https://taskory-cbt.vercel.app";
+  const siteUrl = SITE_URL;
   const websiteJsonLd = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "WebSite",

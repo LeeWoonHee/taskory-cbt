@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 
 import { LegalPage } from "@/components/legal-page";
 
-export const metadata: Metadata = { title: "이용약관 | taskory", description: "taskory CBT 서비스 이용약관입니다." };
+export const metadata: Metadata = {
+  title: "이용약관 | taskory CBT",
+  description: "taskory CBT 서비스 이용약관입니다.",
+  alternates: { canonical: "/terms" },
+};
 
 export default function TermsPage() {
   return <LegalPage eyebrow="서비스 약관" title="이용약관" description="taskory가 제공하는 CBT 시험 연습 서비스의 이용 조건과 회원의 권리·의무를 안내합니다." sections={[

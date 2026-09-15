@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 
 import { LegalPage } from "@/components/legal-page";
 
-export const metadata: Metadata = { title: "개인정보처리방침 | taskory", description: "taskory의 개인정보 수집·이용 및 광고 관련 개인정보처리방침입니다." };
+export const metadata: Metadata = {
+  title: "개인정보처리방침 | taskory CBT",
+  description:
+    "taskory CBT의 개인정보 수집·이용 및 광고 관련 개인정보처리방침입니다.",
+  alternates: { canonical: "/privacy" },
+};
 
 export default function PrivacyPage() {
   return <LegalPage eyebrow="개인정보 안내" title="개인정보처리방침" description="taskory는 학습 기록과 서비스 운영에 필요한 최소한의 개인정보를 안전하게 처리합니다." updatedAt="2026년 9월 11일" sections={[

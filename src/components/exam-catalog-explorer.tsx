@@ -20,10 +20,161 @@ export function ExamCatalogExplorer({ series }: { series: ExamSeries[] }) {
   const transition = { duration: shouldReduceMotion ? 0 : 0.24, ease: [0.22, 1, 0.36, 1] as const };
   const toggleLevel = (key: string) => setExpandedLevels((previous) => previous.includes(key) ? previous.filter((item) => item !== key) : [...previous, key]);
 
-  return <div className="flex flex-col border-y border-[#dfe3e8]">{series.map((item) => {
-    const isSeriesOpen = expandedSeries === item.id;
-    const levels = item.levels ?? [];
-    const directPapers = item.papers ?? [];
-    return <section key={item.id} className="border-b border-[#e8eaed] last:border-b-0"><button type="button" onClick={() => setExpandedSeries((previous) => previous === item.id ? null : item.id)} aria-expanded={isSeriesOpen} className="flex w-full items-center gap-4 py-6 text-left sm:gap-6 sm:py-7"><span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[#f1f5fa] text-[#5271a8]"><FolderSimpleIcon size={22} weight="duotone" /></span><span className="min-w-0 flex-1"><span className="flex flex-wrap items-center gap-x-3 gap-y-1"><strong className="text-lg font-extrabold tracking-[-0.03em] text-[#20242a] sm:text-xl">{item.title}</strong>{item.category && <span className="text-xs font-semibold text-[#8a919b]">{item.category}</span>}</span><span className="mt-1 block text-sm text-[#777f89]">{item.organization}{levels.length ? ` · ${levels.length}개 급수` : ""} · 연도별 기출문제</span></span><span className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-[#e1e4e8] text-[#68717c]"><motion.span animate={{ rotate: isSeriesOpen ? 90 : 0 }} transition={transition}><CaretRightIcon size={17} /></motion.span></span></button><AnimatePresence initial={false}>{isSeriesOpen && <motion.div key="series-content" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={transition} className="overflow-hidden"><div className="mb-6 flex flex-col border-l border-[#dfe3e8] pl-5 sm:mb-7 sm:ml-5 sm:pl-7"><p className="max-w-2xl text-sm leading-6 text-[#737b85]">{item.description}</p><div className="mt-5 flex flex-col">{levels.length ? levels.map((level) => { const key = `${item.id}-${level.id}`; const isLevelOpen = expandedLevels.includes(key); const availableCount = level.papers.filter((paper) => paper.status === "available").length; return <section key={level.id} className="border-t border-[#e8eaed] first:border-t-0"><button type="button" onClick={() => toggleLevel(key)} aria-expanded={isLevelOpen} className="flex w-full items-center justify-between gap-4 py-4 text-left"><span className="flex items-center gap-3"><span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#eef3fb] text-sm font-extrabold text-[#3764ae]">{level.label}</span><span className="text-xs text-[#9298a0]">{availableCount ? `등록 시험 ${availableCount}개` : "등록된 시험 없음"}</span></span><motion.span animate={{ rotate: isLevelOpen ? 90 : 0 }} transition={transition}><CaretRightIcon size={16} className="text-[#747b85]" /></motion.span></button><AnimatePresence initial={false}>{isLevelOpen && <motion.div key="papers" initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={transition} className="overflow-hidden"><div className="flex flex-wrap gap-2 pb-5"><PaperButtons papers={level.papers} /></div></motion.div>}</AnimatePresence></section>; }) : <section className="border-t border-[#e8eaed] pt-4"><div className="flex flex-wrap gap-2"><PaperButtons papers={directPapers} /></div></section>}</div></div></motion.div>}</AnimatePresence></section>;
-  })}</div>;
+  return (
+    <div className="flex flex-col border-y border-[#dfe3e8]">
+      {series.map((item) => {
+        const isSeriesOpen = expandedSeries === item.id;
+        const levels = item.levels ?? [];
+        const directPapers = item.papers ?? [];
+
+        // 모든 회차의 paper 목록을 추출하여 검색엔진 크롤러 및 접근성을 지원
+        const allPapers: Array<{ paper: ExamPaper; levelLabel?: string }> = [
+          ...directPapers.map((paper) => ({ paper })),
+          ...levels.flatMap((level) =>
+            level.papers.map((paper) => ({ paper, levelLabel: level.label })),
+          ),
+        ].filter(({ paper }) => paper.status === "available");
+
+        return (
+          <section key={item.id} className="border-b border-[#e8eaed] last:border-b-0">
+            {/* 검색엔진 크롤러 및 스크린 리더용 시맨틱 링크 (아코디언 개폐 상태와 무관하게 SSR HTML에 항상 포함) */}
+            <div className="sr-only">
+              <h3>{item.title} 기출문제 목록</h3>
+              <ul>
+                {allPapers.map(({ paper, levelLabel }) => (
+                  <li key={`seo-link-${paper.id}`}>
+                    <Link href={`/exams/${paper.id}`}>
+                      {item.title} {levelLabel ? `${levelLabel} ` : ""}
+                      {formatExamPaperLabel(paper)} 기출문제 무료 CBT 풀기
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <button
+              type="button"
+              onClick={() =>
+                setExpandedSeries((previous) => (previous === item.id ? null : item.id))
+              }
+              aria-expanded={isSeriesOpen}
+              className="flex w-full items-center gap-4 py-6 text-left sm:gap-6 sm:py-7"
+            >
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-2xl bg-[#f1f5fa] text-[#5271a8]">
+                <FolderSimpleIcon size={22} weight="duotone" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <strong className="text-lg font-extrabold tracking-[-0.03em] text-[#20242a] sm:text-xl">
+                    {item.title}
+                  </strong>
+                  {item.category && (
+                    <span className="text-xs font-semibold text-[#8a919b]">
+                      {item.category}
+                    </span>
+                  )}
+                </span>
+                <span className="mt-1 block text-sm text-[#777f89]">
+                  {item.organization}
+                  {levels.length ? ` · ${levels.length}개 급수` : ""} · 연도별 기출문제
+                </span>
+              </span>
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl border border-[#e1e4e8] text-[#68717c]">
+                <motion.span
+                  animate={{ rotate: isSeriesOpen ? 90 : 0 }}
+                  transition={transition}
+                >
+                  <CaretRightIcon size={17} />
+                </motion.span>
+              </span>
+            </button>
+            <AnimatePresence initial={false}>
+              {isSeriesOpen && (
+                <motion.div
+                  key="series-content"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={transition}
+                  className="overflow-hidden"
+                >
+                  <div className="mb-6 flex flex-col border-l border-[#dfe3e8] pl-5 sm:mb-7 sm:ml-5 sm:pl-7">
+                    <p className="max-w-2xl text-sm leading-6 text-[#737b85]">
+                      {item.description}
+                    </p>
+                    <div className="mt-5 flex flex-col">
+                      {levels.length ? (
+                        levels.map((level) => {
+                          const key = `${item.id}-${level.id}`;
+                          const isLevelOpen = expandedLevels.includes(key);
+                          const availableCount = level.papers.filter(
+                            (paper) => paper.status === "available",
+                          ).length;
+                          return (
+                            <section
+                              key={level.id}
+                              className="border-t border-[#e8eaed] first:border-t-0"
+                            >
+                              <button
+                                type="button"
+                                onClick={() => toggleLevel(key)}
+                                aria-expanded={isLevelOpen}
+                                className="flex w-full items-center justify-between gap-4 py-4 text-left"
+                              >
+                                <span className="flex items-center gap-3">
+                                  <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#eef3fb] text-sm font-extrabold text-[#3764ae]">
+                                    {level.label}
+                                  </span>
+                                  <span className="text-xs text-[#9298a0]">
+                                    {availableCount
+                                      ? `등록 시험 ${availableCount}개`
+                                      : "등록된 시험 없음"}
+                                  </span>
+                                </span>
+                                <motion.span
+                                  animate={{ rotate: isLevelOpen ? 90 : 0 }}
+                                  transition={transition}
+                                >
+                                  <CaretRightIcon
+                                    size={16}
+                                    className="text-[#747b85]"
+                                  />
+                                </motion.span>
+                              </button>
+                              <AnimatePresence initial={false}>
+                                {isLevelOpen && (
+                                  <motion.div
+                                    key="papers"
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={transition}
+                                    className="overflow-hidden"
+                                  >
+                                    <div className="flex flex-wrap gap-2 pb-5">
+                                      <PaperButtons papers={level.papers} />
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
+                            </section>
+                          );
+                        })
+                      ) : (
+                        <section className="border-t border-[#e8eaed] pt-4">
+                          <div className="flex flex-wrap gap-2">
+                            <PaperButtons papers={directPapers} />
+                          </div>
+                        </section>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </section>
+        );
+      })}
+    </div>
+  );
 }

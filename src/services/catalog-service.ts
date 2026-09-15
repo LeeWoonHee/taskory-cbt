@@ -38,3 +38,15 @@ export async function listPublishedExamIds() {
   const rows = await getDb().select({ id: exams.id }).from(exams).where(eq(exams.status, "published"));
   return rows.map((row) => row.id);
 }
+
+export async function listPublishedExamsForSitemap() {
+  const rows = await getDb()
+    .select({
+      id: exams.id,
+      publishedAt: exams.publishedAt,
+      createdAt: exams.createdAt,
+    })
+    .from(exams)
+    .where(eq(exams.status, "published"));
+  return rows;
+}
