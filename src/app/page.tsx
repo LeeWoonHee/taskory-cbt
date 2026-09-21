@@ -106,6 +106,14 @@ export async function generateMetadata(): Promise<Metadata> {
         title: `CBT 시험 연습 | taskory CBT`,
         description,
         type: "website",
+        images: [
+          {
+            url: "/og-image.png",
+            width: 1200,
+            height: 630,
+            alt: "taskory CBT | 무료 자격증 기출문제 시험 연습",
+          },
+        ],
       },
     };
   } catch {
@@ -137,7 +145,7 @@ export default async function Home() {
   const websiteJsonLd = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "taskory",
+    name: "taskory CBT",
     description:
       "자격증 시험 문제를 CBT 방식으로 풀고 결과를 확인하는 시험 연습 서비스입니다.",
     url: siteUrl,
@@ -146,6 +154,13 @@ export default async function Home() {
       target: `${siteUrl}/exams?q={search_term_string}`,
       "query-input": "required name=search_term_string",
     },
+  }).replace(/</g, "\\u003c");
+  const organizationJsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "taskory CBT",
+    url: siteUrl,
+    logo: `${siteUrl}/taskory-mark.svg`,
   }).replace(/</g, "\\u003c");
   const itemListJsonLd = JSON.stringify({
     "@context": "https://schema.org",
@@ -163,6 +178,10 @@ export default async function Home() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: websiteJsonLd }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: organizationJsonLd }}
       />
       {examItems.length > 0 && (
         <script

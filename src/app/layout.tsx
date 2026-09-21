@@ -31,9 +31,6 @@ export const metadata: Metadata = {
     "자격증 CBT",
     "무료 기출문제",
   ],
-  alternates: {
-    canonical: "/",
-  },
   robots: {
     index: true,
     follow: true,
@@ -60,12 +57,21 @@ export const metadata: Metadata = {
     siteName: "taskory CBT",
     locale: "ko_KR",
     type: "website",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "taskory CBT | 무료 자격증 기출문제 시험 연습",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "taskory CBT | 무료 자격증 기출문제 시험 연습",
     description:
       "지게차운전기능사, 컴퓨터활용능력 등 다양한 국가기술자격 기출문제를 실제 CBT 환경에서 무료로 풀고 채점해 보세요.",
+    images: ["/og-image.png"],
   },
 };
 

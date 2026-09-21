@@ -35,6 +35,7 @@ export async function generateMetadata({
     alternates: {
       canonical: "/exams",
     },
+    robots: q ? { index: false, follow: true } : { index: true, follow: true },
     openGraph: {
       title,
       description,
@@ -80,10 +81,11 @@ export default async function ExamsPage({
         <section className="flex flex-col justify-between gap-8 rounded-[28px] border border-[#dfe3e8] bg-[#f7f8fa] p-7 sm:p-10 lg:flex-row lg:items-end lg:p-12">
           <div>
             <p className="text-sm font-bold text-[#2563eb]">시험 아카이브</p>
-
-            <p className="mt-4 text-sm leading-6 text-[#737a84]">
-              시험을 열고, 급수를 선택한 뒤 원하는 연도의 문제를 시작할 수
-              있습니다.
+            <h1 className="mt-2 text-2xl font-extrabold tracking-[-0.04em] text-[#20242a] sm:text-4xl">
+              {q ? `“${q}” 기출문제 검색` : "자격증 CBT 기출문제 목록"}
+            </h1>
+            <p className="mt-3 text-sm leading-6 text-[#737a84]">
+              원하는 시험을 선택하고 실제 CBT 환경처럼 무료로 문제를 풀어보세요.
             </p>
           </div>
 
