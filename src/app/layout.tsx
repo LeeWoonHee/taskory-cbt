@@ -7,7 +7,6 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { AdSenseScript } from "@/components/adsense-script";
 import { GoogleAnalytics } from "@/components/google-analytics";
-import { OfferwallRouteControl } from "@/components/offerwall-route-control";
 
 import { SITE_URL } from "@/lib/site";
 
@@ -79,10 +78,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ko" className="h-full antialiased">
       <head>
-        <OfferwallRouteControl />
+        <AdSenseScript />
       </head>
       <body className="flex min-h-full flex-col bg-white">
-        <AdSenseScript />
         <GoogleAnalytics />
         <SiteHeader />
         {children}

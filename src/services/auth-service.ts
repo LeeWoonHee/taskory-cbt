@@ -7,6 +7,19 @@ import { users } from "@/db/schema";
 
 const COOKIE_NAME = "cbt_session";
 
+function isConfiguredAdminEmail(email: string) {
+  const configuredAdminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  return Boolean(configuredAdminEmail && configuredAdminEmail === email.trim().toLowerCase());
+}
+
+async function syncConfiguredAdminRole(user: { id: string; name: string; email: string; role: string }) {
+  if (isConfiguredAdminEmail(user.email) && user.role !== "admin") {
+    await getDb().update(users).set({ role: "admin" }).where(eq(users.id, user.id));
+    return { ...user, role: "admin" };
+  }
+  return user;
+}
+
 function getSecret() {
   const secret = process.env.SESSION_SECRET;
   if (!secret) throw new Error("SESSION_SECRET 환경 변수가 설정되지 않았습니다.");
@@ -19,7 +32,7 @@ export async function registerUser(input: { name: string; email: string; passwor
   const existing = await db.select({ id: users.id }).from(users).where(eq(users.email, email)).limit(1);
   if (existing.length) throw new Error("이미 가입된 이메일입니다.");
   const passwordHash = await hash(input.password, 12);
-  const [user] = await db.insert(users).values({ name: input.name.trim(), email, passwordHash }).returning({ id: users.id, name: users.name, email: users.email });
+  const [user] = await db.insert(users).values({ name: input.name.trim(), email, passwordHash, role: isConfiguredAdminEmail(email) ? "admin" : "user" }).returning({ id: users.id, name: users.name, email: users.email, role: users.role });
   return user;
 }
 
@@ -28,12 +41,7 @@ export async function loginUser(input: { email: string; password: string }) {
   const email = input.email.trim().toLowerCase();
   const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
   if (!user || !(await compare(input.password, user.passwordHash))) throw new Error("이메일 또는 비밀번호를 확인해 주세요.");
-  const configuredAdminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
-  if (configuredAdminEmail && configuredAdminEmail === email && user.role !== "admin") {
-    await db.update(users).set({ role: "admin" }).where(eq(users.id, user.id));
-    user.role = "admin";
-  }
-  return { id: user.id, name: user.name, email: user.email, role: user.role };
+  return syncConfiguredAdminRole({ id: user.id, name: user.name, email: user.email, role: user.role });
 }
 
 export async function createSessionToken(user: { id: string; name: string; email: string }) {
@@ -58,7 +66,7 @@ export async function getCurrentUser(request: Request) {
     const { payload } = await jwtVerify(token, getSecret());
     if (!payload.sub) return null;
     const [user] = await getDb().select({ id: users.id, name: users.name, email: users.email, role: users.role }).from(users).where(eq(users.id, payload.sub)).limit(1);
-    return user ?? null;
+    return user ? await syncConfiguredAdminRole(user) : null;
   } catch { return null; }
 }
 

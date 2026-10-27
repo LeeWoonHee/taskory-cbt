@@ -294,8 +294,8 @@ export default async function ExamPage({
               무료로 시험 시작하기
             </h2>
             <p className="mt-3 text-sm leading-6 text-[#c8cdd5]">
-              짧은 광고 1편을 시청하면 전체 {exam.questions.length}문항을 풀 수
-              있습니다.
+              전체 {exam.questions.length}문항을 무료로 풀고 제출 즉시 결과를
+              확인하세요.
             </p>
             <a
               href={`/exams/${id}/start`}
@@ -304,7 +304,7 @@ export default async function ExamPage({
                 "mt-7 h-14 w-full rounded-2xl border-[#2563eb] bg-[#2563eb] text-base hover:bg-[#1f55cf]",
               )}
             >
-              광고 보고 무료 응시
+              시험 응시하기
             </a>
             <div className="mt-5 flex items-start gap-3 border-t border-white/10 pt-5">
               <ShieldCheckIcon
@@ -313,8 +313,8 @@ export default async function ExamPage({
                 aria-hidden="true"
               />
               <p className="text-xs leading-5 text-[#aeb5bf]">
-                광고 시청 후 12시간 동안 시험을 이용할 수 있습니다. 시험 도중에는
-                추가 광고가 표시되지 않습니다.
+                시험 시작 전 전면 광고가 표시될 수 있습니다. 광고가 표시되면
+                닫은 뒤 시험을 계속할 수 있습니다.
               </p>
             </div>
           </section>
