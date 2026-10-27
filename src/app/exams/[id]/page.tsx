@@ -275,6 +275,7 @@ export default async function ExamPage({
                 다른 연도 및 다른 자격증 기출문제를 찾고 계신가요?
               </p>
               <Link
+                data-google-vignette="false"
                 href="/exams"
                 className="text-xs font-bold text-[#2563eb] hover:underline"
               >

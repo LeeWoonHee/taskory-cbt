@@ -209,6 +209,7 @@ export default async function Home() {
               </p>
             </div>
             <Link
+              data-google-vignette="false"
               href="/exams"
               className="shrink-0 text-sm font-bold text-[#59616d] hover:text-[#2563eb]"
             >

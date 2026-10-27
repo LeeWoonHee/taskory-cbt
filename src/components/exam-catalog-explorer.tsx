@@ -10,7 +10,7 @@ import { formatExamPaperLabel, type ExamPaper, type ExamSeries } from "@/types/e
 function PaperButtons({ papers }: { papers: ExamPaper[] }) {
   const availablePapers = papers.filter((paper) => paper.status === "available");
   if (!availablePapers.length) return <span className="text-sm text-[#9aa0a8]">등록된 시험이 없습니다.</span>;
-  return <>{availablePapers.map((paper) => <Link key={paper.id} href={`/exams/${paper.id}`} className="flex min-w-0 h-10 items-center gap-2 rounded-xl border border-[#8eabd9] bg-[#f1f6ff] px-3 text-sm font-bold text-[#2457ae] transition-colors hover:bg-[#e4efff]"><FileTextIcon size={15} />{formatExamPaperLabel(paper)}</Link>)}</>;
+  return <>{availablePapers.map((paper) => <Link data-google-vignette="false" key={paper.id} href={`/exams/${paper.id}`} className="flex min-w-0 h-10 items-center gap-2 rounded-xl border border-[#8eabd9] bg-[#f1f6ff] px-3 text-sm font-bold text-[#2457ae] transition-colors hover:bg-[#e4efff]"><FileTextIcon size={15} />{formatExamPaperLabel(paper)}</Link>)}</>;
 }
 
 export function ExamCatalogExplorer({ series }: { series: ExamSeries[] }) {
@@ -43,7 +43,7 @@ export function ExamCatalogExplorer({ series }: { series: ExamSeries[] }) {
               <ul>
                 {allPapers.map(({ paper, levelLabel }) => (
                   <li key={`seo-link-${paper.id}`}>
-                    <Link href={`/exams/${paper.id}`}>
+                    <Link data-google-vignette="false" href={`/exams/${paper.id}`}>
                       {item.title} {levelLabel ? `${levelLabel} ` : ""}
                       {formatExamPaperLabel(paper)} 기출문제 무료 CBT 풀기
                     </Link>

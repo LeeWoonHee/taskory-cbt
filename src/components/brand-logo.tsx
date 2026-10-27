@@ -4,6 +4,7 @@ import Link from "next/link";
 export function BrandLogo() {
   return (
     <Link
+      data-google-vignette="false"
       href="/"
       className="flex items-center gap-2.5"
       aria-label="taskory 홈"

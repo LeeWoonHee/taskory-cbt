@@ -6,7 +6,7 @@ export function LegalPage({ eyebrow, title, description, sections, updatedAt = "
   return (
     <main className="flex-1 bg-[#f7f8fa]">
       <div className="mx-auto w-full max-w-[900px] px-5 py-12 sm:px-8 lg:py-20">
-        <Link href="/" className="text-sm font-bold text-[#2563eb]">taskory 홈으로</Link>
+        <Link data-google-vignette="false" href="/" className="text-sm font-bold text-[#2563eb]">taskory 홈으로</Link>
         <header className="mt-8 rounded-[28px] border border-[#e0e3e7] bg-white p-7 sm:p-10">
           <p className="text-sm font-bold text-[#2563eb]">{eyebrow}</p>
           <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-[#20242a]">{title}</h1>
