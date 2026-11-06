@@ -29,6 +29,7 @@ export const metadata: Metadata = {
     "지게차운전기능사 기출문제",
     "자격증 CBT",
     "무료 기출문제",
+    "무료 기출 문제",
   ],
   robots: {
     index: true,

@@ -17,6 +17,8 @@ const KEYWORDS = [
   "CBT 문제풀이",
   "온라인 CBT 시험",
   "기출문제",
+  "무료 기출문제",
+  "무료 기출 문제",
   "자격증 시험",
   "자격증 기출문제",
   "자격증 CBT",
@@ -97,6 +99,12 @@ export async function generateMetadata(): Promise<Metadata> {
       keywords: [
         ...titles,
         ...titles.map((title) => `${title} 기출문제`),
+        ...titles.flatMap((title) => [
+          `${title} 무료 기출문제`,
+          `${title} 무료 기출 문제`,
+          `무료 기출문제 ${title}`,
+          `무료 기출 문제 ${title}`,
+        ]),
         ...titles.map((title) => `${title} CBT`),
         ...titles.map((title) => `${title} 무료 시험`),
         ...KEYWORDS,

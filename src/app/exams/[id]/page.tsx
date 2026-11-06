@@ -24,7 +24,8 @@ export async function generateMetadata({
 
   const rawTitle = exam.title.split(" · ")[0] ?? exam.title;
   const spacedTitle = rawTitle.replace(/([가-힣]{2,3})(기능사|기사|산업기사|관리사)/g, "$1 $2");
-  const description = `${exam.title} 기출문제 ${exam.questions.length}문항을 실제 시험과 동일한 무료 CBT 환경에서 응시하고 즉시 채점 결과를 확인하세요.`;
+  const title = `${exam.title} 무료 기출문제 CBT | taskory`;
+  const description = `${exam.title} 무료 기출문제 ${exam.questions.length}문항을 실제 시험과 동일한 CBT 환경에서 응시하고 즉시 채점 결과를 확인하세요.`;
 
   const keywords = Array.from(
     new Set([
@@ -34,6 +35,12 @@ export async function generateMetadata({
       `${exam.title} 기출문제`,
       `${rawTitle} 기출문제`,
       `${spacedTitle} 기출문제`,
+      ...[exam.title, rawTitle, spacedTitle].flatMap((title) => [
+        `${title} 무료 기출문제`,
+        `${title} 무료 기출 문제`,
+        `무료 기출문제 ${title}`,
+        `무료 기출 문제 ${title}`,
+      ]),
       `${rawTitle} CBT`,
       `${spacedTitle} CBT`,
       `${rawTitle} 필기`,
@@ -41,24 +48,25 @@ export async function generateMetadata({
       "CBT",
       "기출문제",
       "무료 기출문제",
+      "무료 기출 문제",
       "자격증 시험",
     ]),
   );
 
   return {
-    title: `${exam.title} 기출문제 무료 CBT | taskory`,
+    title,
     description,
     keywords,
     alternates: { canonical: `/exams/${id}` },
     openGraph: {
-      title: `${exam.title} 기출문제 무료 CBT | taskory`,
+      title,
       description,
       url: `${SITE_URL}/exams/${id}`,
       type: "article",
     },
     twitter: {
       card: "summary",
-      title: `${exam.title} 기출문제 무료 CBT | taskory`,
+      title,
       description,
     },
   };
